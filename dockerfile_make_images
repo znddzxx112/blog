@@ -1,12 +1,7 @@
-准备nginx.repo
 
-准备nginx配置文件default.conf
+准备nginx配置文件,rc.local
 
-准备rc.local，用来执行启动命令
-
-有需要还可以准备start.sh
-
-可参照项目
+可参照
 [https://github.com/znddzxx112/docker-centos-nginx-php](https://github.com/znddzxx112/docker-centos-nginx-php)
 
 ### 编辑Dockerfile
@@ -71,7 +66,7 @@ $ git commit -m "dockerfile"
 $ git remote add origin https://github.com/znddzxx112/docker-centos-nginx-php.git
 $ git push -u origin master
 ```
-### 在安装docker，git后,部署实践
+### 三句话部署实践
 ### （一）适用于测试场景的快速部署
 ```
 $ git clone https://github.com/znddzxx112/docker-centos-nginx-php
@@ -79,10 +74,10 @@ $ sudo docker build -t centos7-nginx-php .
 $ docker run -d -v $pwd:/app  centos7-nginx-php
 ```
 centos7-nginx-php 为镜像名称，此种方式为代码放置容器外部，适合调试，代码经常替换
-### （二）适用于微服务场景的快速部署
+### （二）适用于单一服务场景的快速部署
 ```
 $ git clone https://github.com/znddzxx112/docker-centos-nginx-php
 $ sudo docker build -t centos7-nginx-php. 
-$ docker run -d -v $pwd:/app 
+$ docker run -d -v $pwd:/app centos7-nginx-php
 ```
 centos7-nginx-php 为镜像名称，此种方式为代码放置容器内部，适合单一服务

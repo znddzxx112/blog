@@ -18,6 +18,19 @@
 
 * MariaDB是由MySQL创始人之一Monty分支的一个版本。在MySQL数据库被Oracle公司收购后，Monty担心MySQL数据库发展的未来，从而分支出一个版本。这个版本和其他分支有很大的不同，其默认使用崭新的Maria存储引擎，是原MyISAM存储引擎的升级版本。此外，其增加了对Hash Join的支持和对Semi Join的优化，使MariaDB在复杂的分析型SQL语句中较原版本的MySQL性能提高很多。另外，除了包含原有的一些存储引擎，如InnoDB、Memory，还整合了PBXT、FederatedX存储引擎。不得不承认，MariaDB数据库是目前MySQL分支版本中非常值得使用的一个版本，尤其是在OLAP的应用中，对Hash Join的支持和对Semi Join的优化可以大大提高MySQL数据库在这方面的查询性能。MariaDB的官方网站为http://mariadb.org/
 
+### php版本
+参考文章 http://www.jb51.net/article/39148.htm
+
+- mysql 5.0  procedures、Views、Cursors、Triggers、XA transactions的支持
+- mysql 5.1  增加了Event scheduler，Partitioning，Pluggable storage engine API ，Row-based replication、Global级别动态修改general query log和slow query log的支持
+- mysql 5.2
+- mysql 5.3
+- mysql 5.4
+- mysql 5.5
+- mysql 5.6
+- mysql 5.7
+- mysql 7.0
+
 ### 网络资源
 
 - http://dev.mysql.com/downloads/ 是MySQL 的官方网站，可以下载到各个版本的 MySQL 以及

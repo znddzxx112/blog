@@ -12,3 +12,7 @@
 7. mysql存储过程和函数和变量 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_07_produre_charset.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_07_produre_charset.md)
 8. mysql触发器 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_08_trigger.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_08_trigger.md)
 9. mysql事务控制和锁定语句 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_09_transaction.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_09_transaction.md)
+10. sql优化 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_10_be_better.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_10_be_better.md)
+11. 锁 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_11_lock.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_11_lock.md)
+12. mysql管理工具与日志 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_12_tool_log.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_12_tool_log.md)
+13. mysql权限与安全 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_13_privileges_security.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_13_privileges_security.md)

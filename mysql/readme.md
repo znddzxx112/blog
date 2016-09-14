@@ -16,3 +16,6 @@
 11. 锁 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_11_lock.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_11_lock.md)
 12. mysql管理工具与日志 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_12_tool_log.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_12_tool_log.md)
 13. mysql权限与安全 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_13_privileges_security.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_13_privileges_security.md)
+14. sql番外篇 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_14_sql_overview.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_14_sql_overview.md)
+15. mysql参数 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_15_variables.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_15_variables.md)
+16. mysql性能优化实践篇1-索引 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_16_perform_01_index.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_16_perform_01_index.md)

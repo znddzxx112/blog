@@ -44,9 +44,29 @@ drop trigger ins_film;
 ```
 show triggers 
 ```
+
+###### 测试 - bak插入数据
+
+- 创建触发器
+
 ```
-information_schema.triggers 表
-desc triggers;
+DELIMITER $$
+CREATE TRIGGER insert_tri AFTER  INSERT ON sm_mes FOR EACH ROW 
+BEGIN
+	INSERT INTO sm_mes_bak(`time`,`sener`,`rever`,`content`) VALUES(new.time, new.sener, new.rever, new.content);
+END$$
+DELIMITER ;
 ```
 
+- 查看创建的触发器
+
+```
+SHOW TRIGGERS 
+```
+
+- 插入数据，查看结果
+
+```
+INSERT INTO sm_mes(`time`,`sener`,`rever`,`content`) VALUES (UNIX_TIMESTAMP(),ROUND(RAND() * 1000,2),TRUNCATE(RAND() * 100,2),RPAD('信息1',20,'hellofoo'));
+```
 

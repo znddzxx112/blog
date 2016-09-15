@@ -10,6 +10,11 @@
 - 安全
 - 数据独立
 
+> 查看视图
+```
+ show table status from db;
+```
+
 > 创建或者修改视图
 
 ```
@@ -31,13 +36,6 @@ ALTER [ALGORITHM = {UNDEFINED | MERGE | TEMPTABLE}]
 VIEW view_name [(column_list)]
 AS select_statement
 [WITH [CASCADED | LOCAL] CHECK OPTION]
-```
-
-```
- CREATE OR REPLACE VIEW staff_list_view AS
--> SELECT s.staff_id,s.first_name,s.last_name,a.address
--> FROM staff AS s,address AS a
--> where s.address_id = a.address_id ;
 ```
 
 > 删除视图

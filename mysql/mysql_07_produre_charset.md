@@ -67,6 +67,8 @@ SHOW PROCEDURE FROM smdb
 SHOW CREATE {PROCEDURE | FUNCTION} sp_name
 ```
 
+#### 存储过程变量
+
 ##### 变量定义
 
 ```
@@ -91,4 +93,11 @@ SELECT col_name[,...] INTO var_name[,...] table_expr
 
 ```
 DECLARE handler_type HANDLER FOR condition_value[,...] sp_statement
+```
+#### 会话变量定义
+
+- 使用set或select直接赋值，变量名以 @ 开头
+
+```
+set @var=1;
 ```

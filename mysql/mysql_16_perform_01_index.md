@@ -2,10 +2,28 @@
 
 ##### 前期准备
 
+- 修改表结构达到适合
+```
+eg:
+ALTER TABLE `sm_mes` ADD COLUMN id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST
+ALTER TABLE `sm_mes` CHANGE COLUMN `TIME` `time` INT(10) UNSIGNED NOT NULL DEFAULT 0 AFTER `id`
+ALTER TABLE `sm_mes` CHANGE COLUMN `sener` `sener` DECIMAL(5,2) NOT NULL DEFAULT 0.00 AFTER `time`
+ALTER TABLE `sm_mes` CHANGE COLUMN `rever` `rever` DECIMAL(5,2) NOT NULL DEFAULT 0.00 AFTER `sener`
+ALTER TABLE `sm_mes` CHANGE COLUMN `CONTENT` `content` VARCHAR(255) NOT NULL DEFAULT '' AFTER `rever`
+ALTER TABLE `sm_mes` CONVERT TO CHARACTER SET  utf8 COLLATE  utf8_general_ci
+```
+
 - 产生大数据
 
 ```
+eg:
+
+INSERT INTO sm_mes(`time`,`sener`,`rever`,`content`) VALUES (UNIX_TIMESTAMP(),ROUND(RAND() * 1000,2),TRUNCATE(RAND() * 100,2),'信息1'),(UNIX_TIMESTAMP(),ROUND(RAND() * 1000,2),TRUNCATE(RAND() * 100,2),'信息2')
+
 INSERT INTO `b_log`(`remote_addr`,`time_local`,`dateline`,`menthod`,`url`,`http_ver`,`status`,`body_bytes_sent`,`user_agent`) (SELECT `remote_addr`,`time_local`,`dateline`,`menthod`,`url`,`http_ver`,`status`,`body_bytes_sent`,`user_agent` FROM `b_log` WHERE `id` <= 400000 AND `id` >= 300000)
+
+// 循环插入数据
+INSERT INTO `b_log`(`remote_addr`,`time_local`,`dateline`,`menthod`,`url`,`http_ver`,`status`,`body_bytes_sent`,`user_agent`) (SELECT `remote_addr`,`time_local`,`dateline`,`menthod`,`url`,`http_ver`,`status`,`body_bytes_sent`,`user_agent` FROM `b_log` WHERE `id` <= 300000)
 ```
 
 - 开启慢日志设置
@@ -14,35 +32,19 @@ INSERT INTO `b_log`(`remote_addr`,`time_local`,`dateline`,`menthod`,`url`,`http_
 SHOW VARIABLES LIKE "long%";
 SHOW VARIABLES LIKE "slow%";
 
-5.6版本的设置方式：
-#开启慢查询 slow_query_log值为1或on表示开启，为0或off为关闭
-slow_query_log=on 
-#设置慢查询日志放在哪里
-slow_query_log_file=mysql-slow 
-#设置sql执行时间多长为慢查询
-long_query_time=2
-#表示没有使用索引的sql查询也会记录下来
-log-queries-not-using-indexes
+// 设置方法一：
+SET GLOBAL slow_query_log = ON // 开启慢查询
+SET SESSION long_query_time = 1 // 查询时间
 
-eg:
-// 开启慢查询
-SET GLOBAL slow_query_log = ON
-
-// 设置超时时间
-my.conf 
+// 设置方法二：
+my.conf
 [mysqlnd]
 slow_query_log = on
 long_query_time = 2
 slow_query_log_file d:\wamp\bin\mysql\mysql5.6.17\data\all_slow.log
 
-// 插入30万条数据
-INSERT INTO `b_log`(`remote_addr`,`time_local`,`dateline`,`menthod`,`url`,`http_ver`,`status`,`body_bytes_sent`,`user_agent`) (SELECT `remote_addr`,`time_local`,`dateline`,`menthod`,`url`,`http_ver`,`status`,`body_bytes_sent`,`user_agent` FROM `b_log` WHERE `id` <= 300000)
-
-// 耗时17s
-
-// 日志记录在
+// 慢日志查看记录
 slow_query_log_file d:\wamp\bin\mysql\mysql5.6.17\data\caokl-slow.log
-
 
 ```
 
@@ -69,7 +71,6 @@ show processlist
 
 ```
 SHOW STATUS LIKE 'com_%'
-
 Com_select： 执行 select 操作的次数， 一次查询只累加 1
 Com_insert： 执行 INSERT 操作的次数， 对于批量插入的 INSERT 操作， 只累加一次
 Com_update： 执行 UPDATE 操作的次数

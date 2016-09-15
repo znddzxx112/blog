@@ -60,21 +60,15 @@ DROP PROCEDURE film_in_stock;
 > 查看存储过程和函数
 
 ```
+SHOW PROCEDURE FROM smdb
+```
+
+```
 SHOW CREATE {PROCEDURE | FUNCTION} sp_name
 ```
 
-```
-show create procedure film_in_stock \G
-```
-
-> 通过查看 information_schema. Routines 了解存储过程和函数的信息
-
-
-```
-select * from routines where ROUTINE_NAME = 'film_in_stock' \G
-```
-
 ##### 变量定义
+
 ```
 DECLARE var_name[,...] type [DEFAULT value]
 ```

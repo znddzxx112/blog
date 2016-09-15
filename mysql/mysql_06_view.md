@@ -13,7 +13,7 @@
 > 查看视图
 
 ```
- show table status from db;
+ show table status from db where comment = 'view';
 ```
 
 > 创建或者修改视图

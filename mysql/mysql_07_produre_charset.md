@@ -99,5 +99,8 @@ DECLARE handler_type HANDLER FOR condition_value[,...] sp_statement
 - 使用set或select直接赋值，变量名以 @ 开头
 
 ```
-set @var=1;
+SET @foo = 1;
+SELECT @foo
+SET @foo = @foo + 1
+SELECT @foo
 ```

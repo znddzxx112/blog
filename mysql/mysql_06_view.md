@@ -11,6 +11,7 @@
 - 数据独立
 
 > 查看视图
+
 ```
  show table status from db;
 ```

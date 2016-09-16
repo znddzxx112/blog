@@ -31,11 +31,26 @@
 > 数据库备份
 
 ```
+// 导出整个数据库
 mysqldump -u root -p test_db > test_db.sql
+
+// 导出一个表
+mysqldump -u 用户名 -p 数据库名 表名> 导出的文件名
+mysqldump -u wcnc -p smgp_apps_wcnc users> wcnc_users.sql
+
+// 导出一个数据库结构
+mysqldump -u wcnc -p -d --add-drop-table smgp_apps_wcnc >d:\wcnc_db.sql
+#-d 不导出数据只导出结构 --add-drop-table 在每个create语句之前增加一个drop table 
 ```
 
 > 数据库还原
 
 ```
-mysql -u username -p test_db < test_db.sql
+// 进入mysql数据库控制台，
+mysql -u root -p 
+mysql>use 数据库
+mysql>set names utf8; // （先确认编码，如果不设置可能会出现乱码，注意不是UTF-8） 
+
+// 然后使用source命令，后面参数为脚本文件（如这里用到的.sql）
+mysql>source d:\wcnc_db.sql
 ```

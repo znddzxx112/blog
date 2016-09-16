@@ -24,3 +24,18 @@
 
 ###### perror(错误代码查看工具)
 
+##### mysqldump(数据导出工具)
+
+- 参考文章[http://www.lihuai.net/linux/mysql/1031.html](http://www.lihuai.net/linux/mysql/1031.html)
+
+> 数据库备份
+
+```
+mysqldump -u root -p test_db > test_db.sql
+```
+
+> 数据库还原
+
+```
+mysql -u username -p test_db < test_db.sql
+```

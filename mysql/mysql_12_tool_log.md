@@ -54,3 +54,20 @@ mysql>set names utf8; // （先确认编码，如果不设置可能会出现乱�
 // 然后使用source命令，后面参数为脚本文件（如这里用到的.sql）
 mysql>source d:\wcnc_db.sql
 ```
+
+#### perror(错误代码查看工具)
+
+- 参考文章:http://www.phpchina.com/thread-170217-1-1.html
+
+```
+// 错误日志里一般都会发现这样的错误编号。这时我们就可以利用这个命令分析到底是哪里出问题了。
+perror 135
+```
+
+#### mysqlshow(数据库对象查看工具)
+
+- 参考文章:http://man.linuxde.net/mysqlshow
+
+```
+mysqlshow -u root -p --count
+```

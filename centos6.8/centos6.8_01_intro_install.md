@@ -98,10 +98,9 @@ Wiki: http://wiki.centos.org/
 - 关闭selinux
 
 ```
-su
-vi /etc/sysconfig/selinux
-selinux = disabled
-init 6 // 重启生效
+# vi /etc/sysconfig/selinux
+修改 selinux = disabled
+# init 6 // 重启生效
 ```
 
 - 配置ip地址
@@ -112,17 +111,21 @@ init 6 // 重启生效
 
 //固定IP地址配置方法-前提桥接
 DEVICE=eth0
-HWADDR=
-TYPE=Ethernet   // 网络类型
-UUID=
+TYPE=Ethernet // 网络类
+UUID=618685ae-cb4d-4660-b43e-b677517da559
 ONBOOT=yes
 NM_CONTROLLED=yes
 BOOTPROTO=none
-IPADDR=192.168.1.119
-NETMASK=255.255.255.0 // 子网掩码
-GATEWAY=192.168.1.253 //网关
-IPV6INIT=no     //不使用IPV6INIT
-ARPCHECK=no
+IPADDR=192.168.111.229
+NETMASK=255.255.255.0 // 子网掩码 或者 PREFIX=24
+GATEWAY=192.168.111.1
+DNS1=192.168.111.1
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=yes
+IPV6INIT=no
+NAME="System eth0"
+HWADDR=00:0C:29:C3:F1:FC
+ARPCHECK=no //不使用IPV6INIT
 
 //DHCP 自动获取IP
 DEVICE=eth0
@@ -154,10 +157,11 @@ nameserver 192.168.1.253
 # echo "install ipv6 /bin/true" > /etc/modprobe.d/disable-ipv6.conf
 
 // 重启生效
+# init 6
 
 // 启用
 # vi /etc/modprobe.d/disable-ipv6.conf
-install ipv6 /bin/true //删除此行
+install ipv6 /bin/true //禁用 删除此行
 
 ```
 
@@ -249,7 +253,7 @@ LANG="zh_CN.UTF-8"
 # mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
 2、下载新的CentOS-Base.repo到/etc/yum.repos.d/
 # wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo 
-3、之后运行yum 
-# makecache生成缓存
+3、运行 
+# yum makecache // 生成缓存
 ```
 

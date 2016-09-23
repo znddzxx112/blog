@@ -38,7 +38,7 @@
 skip-grant-tables // 屏蔽权限
 explicit_defaults_for_timestamp=true // 5.7后没有这句话启动报错
 // 注意:data_dir 下面不能有内容
-# service msyqld start
+# service mysqld start
 
 # mysql -u root
 # use mysql;

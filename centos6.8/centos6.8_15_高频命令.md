@@ -126,4 +126,34 @@ exists key
 
 设置生命周期
 expire key 整数值：设置key的生命周期以秒为单位
+
+redis过期时间
+查询key过期时间
+ttl key
+
+设置过期时间
+expire key sconends 秒数
+pexpire key mcsecond 毫秒数
+expireat key time 
+pexpire key microtime
+
+键值过期策略总结：
+1.定时删除，内存友好，cpu不友好
+2.惰性删除，cpu友好，内存不友好
+3.定期删除，折中
+redis采用 惰性删除和定期删除这二种策略
+```
+* mongodb
+```
+> show dbs；
+> use dbname;
+> db.getCollectionNames();
+> db.quickReply.find();
+> db.quickReply.update({"":""},{$set:{"":""}});
+> db.quickReply.update({"_id":ObjectId("")},{$set:{"":""}});
+// 删除数据库 - 选择数据库，删除数据库
+> use dbname:
+> db.dropDatabase();
+// 删除collection数据
+> db.quickreply.remove({"userid":""})
 ```

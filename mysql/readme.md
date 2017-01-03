@@ -20,3 +20,4 @@
 15. mysql参数 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_15_variables.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_15_variables.md)
 16. mysql性能优化实践篇1-索引 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_16_perform_01_index.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_16_perform_01_index.md)
 17. mysql性能优化实践篇2-存储过程产生大量数据 [https://github.com/znddzxx112/blog/blob/master/mysql/mysql_17_perform_02_big_data.md](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_17_perform_02_big_data.md)
+18. [mysql表亿条数据查询暨sql优化实例](https://github.com/znddzxx112/blog/blob/master/mysql/mysql_18_mysql%E8%A1%A8%E4%BA%BF%E6%9D%A1%E6%95%B0%E6%8D%AE%E6%9F%A5%E8%AF%A2%E6%9A%A8sql%E4%BC%98%E5%8C%96%E5%AE%9E%E4%BE%8B.md)

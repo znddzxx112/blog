@@ -14,4 +14,5 @@ focus on php，golang，centos，nginx，docker ...
  - 《大型网站技术架构+核心原理与案例分析-李智慧》
  - 《redis设计与实现》
  - 《学会提问》
- - 《mongodb实战》(阅读中...)
+ - 《mongodb实战》
+ - 《Effective MySQL之SQL语句最优化》(阅读中...)

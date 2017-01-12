@@ -1,5 +1,16 @@
 - 参考文章：http://blog.csdn.net/physicsdandan/article/details/45667357
 - http://nginx.org/en/docs/http/ngx_http_upstream_module.html
+- http://blog.codinglabs.org/articles/intro-of-nginx-module-development.html
+- 安装nginx模块步骤
+```
+./configure --prefix=安装目录 --add-module=模块源代码文件目录
+make
+make install
+```
+- 查看nginx编译的代码（安装了哪些模块）
+```
+nginx -V
+```
 - nginx .conf
 - 反向代码和负载均衡都使用upstream块。下面upstream块的结构。
 ```

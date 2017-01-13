@@ -36,3 +36,48 @@ http {
     }
 }
 ```
+
+- 附上nginx.conf常用结构
+```
+user nobody
+work_process 1
+events {
+    work_connection 1024
+}
+// 反向代理或者负载均衡
+upstream phpbackend{
+    server unix:/dev/shm/php-fpm.socket;
+    server 127.0.0.1:9000;
+}
+
+http {
+    include mime.types;
+    server {
+        root  www
+        listen
+        server_name 
+        location = /static/ {
+
+        }
+        location ^~ /images/ {
+            expired 3d;
+        }
+        location ~* .(jpg|bmp)${
+            expired 3h;
+            return 403;
+        }
+        location ~ /circle/(\d+)/\.html {
+            root www/html;
+            fastcgi_pass phpbackend;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root $fastcgi_script_name;
+            include fastcgi_params;
+        }
+        location / {
+
+        }
+    }
+    # 加载其他虚拟主机
+    include vhost/*.conf
+}
+```

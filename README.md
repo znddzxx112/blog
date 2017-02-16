@@ -18,5 +18,6 @@ focus on php，golang，centos，nginx，docker ...
  - 《Effective MySQL之SQL语句最优化》(阅读中...)
  
  ##### 等待
- 《Go并发编程实战》
- 《人月神话》
+ - 《Go并发编程实战》
+ - 《人月神话》
+ - 《git权威指南》

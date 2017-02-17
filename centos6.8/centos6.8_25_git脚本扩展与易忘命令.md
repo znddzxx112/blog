@@ -30,6 +30,13 @@ $ git config --global --edit
 ```
 
 - 常用命令
+
+- git push
+```
+git push -u origin master
+git push -u origin ckl_feed_second_opt
+```
+
 - git log
 ```
 git log --oneline -n 10
@@ -65,3 +72,34 @@ cd /c/Users/vir/
 ```
 参考文章：https://github.com/geeeeeeeeek/git-recipes/wiki/2.5-%E6%A3%80%E5%87%BA%E4%B9%8B%E5%89%8D%E7%9A%84%E6%8F%90%E4%BA%A4
 ```
+
+- git reset git clean
+- 适用于本地
+```
+git clean命令经常和git reset --hard一起使用。记住，reset只影响被跟踪的文件，所以还需要一个单独的命令来清理未被跟踪的文件。这个两个命令相结合，你就可以将工作目录回到之前特定提交时的状态。
+```
+
+- git revert
+- 远程回退
+```
+确保你只对本地的修改使用git reset——而不是公共更改。如果你需要修复一个公共提交，git revert命令正是被设计来做这个的。
+```
+
+- git remote
+```
+git remote -v
+git remote add <name> url
+git remote rm <name>
+```
+
+- git branch
+```
+git branch crazy-experiment
+git branch -d crazy-experiment #删除分支
+
+git branch new-feature
+git checkout new-feature
+git merge <branch> 将指定分支并入当前分支
+```
+
+- 钩子-自定义工作流

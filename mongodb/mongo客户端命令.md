@@ -106,6 +106,7 @@ db.collection.find({ "field" : { $gt: value } } ); // 大于: field > value
 db.collection.find({ "field" : { $lt: value } } ); // 小于: field < value
 db.collection.find({ "field" : { $gte: value } } ); // 大于等于: field >= value
 db.collection.find({ "field" : { $lte: value } } ); // 小于等于: field <= value
+db.collection.find({ "field" : { $gt: value1, $lt: value2 } } ); // value1 < field < value
 ```
 
 ##### all操作

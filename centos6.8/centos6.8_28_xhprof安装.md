@@ -4,13 +4,14 @@
 - 安装扩展
 - http://pecl.php.net/package/xhprof
 ```
-php5.4及以上版本不能在pecl中下载，不支持。需要在github上下载hhttps://github.com/phacility/xhprof.git。
-另外xhprof已经很久没有更新过了，截至目前还不支持php7，php7可以试使用https://github.com/tideways/php-profiler-extension。
-php7 推荐使用这个：https://github.com/Yaoguais/phpng-xhprof ./xhprof
+php5.4及以上版本不能在pecl中下载，不支持。
+需要在github上下载hhttps://github.com/phacility/xhprof.git。
+另外xhprof已经很久没有更新过了，截至目前还不支持php7，
+php7可以试使用https://github.com/tideways/php-profiler-extension。
+php7推荐使用这个：https://github.com/Yaoguais/phpng-xhprof ./xhprof
 ```
+
 ```
-# wget http://pecl.php.net/get/xhprof-0.9.4.tgz #会出现错误
-// 替代方案
 # git clone https://github.com/Yaoguais/phpng-xhprof ./xhprof
 #cd xhprof
 #/Library/WebServer/php-5.4/bin/phpize
@@ -50,7 +51,7 @@ xhprof_enable();
 file_put_contents((ini_get('xhprof.output_dir') ? : '/tmp') . '/' . uniqid() . '.xhprof.xhprof', serialize(xhprof_disable()));
 ```
 
-- 优雅接入项目中
+- 优雅接入项目中（使用xhgui跳过这些）
 
 ```
 /data/www/xhprof/inject.php
@@ -70,8 +71,7 @@ register_shutdown_function(function() {
     //保存xhprof数据
     ...
 });
-```
-```
+
 修改php配置文件中的auto_prepend_file配置
 auto_prepend_file = /data/www/xhprof/inject.php
 nginx服务器配置加上
@@ -95,12 +95,18 @@ fastcgi_param PHP_VALUE "auto_prepend_file=/data/www/xhprof/inject.php";
 - 在nginx中配置指向xhgui/webroot中
 ```
 fastcgi_param  PHP_VALUE "auto_prepend_file=/var/www/xhgui/external/header.php";
-
 ```
-- 在php.ini 增加
+- 在php.ini 增加（与上面的方法选其中之一即可）
 ```
 vim /usr/local/php7/lib/php.ini
 auto_prepend_file = /var/www/xhgui/external/header.php
 ```
 
-
+- 需要编辑一下代码
+```
+#vim xhgui/external/header.php
+// 注释这块代码
+if (!Xhgui_Config::shouldRun()) {
+    return;
+}
+```

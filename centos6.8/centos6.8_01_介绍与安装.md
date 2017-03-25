@@ -51,6 +51,7 @@ http://vault.centos.org/
 ```
 // 网易镜像(首选) 存储6的最新版本和7的最新版本
 http://mirrors.163.com/
+http://mirrors.163.com/centos/6.8/isos/i386/
 
 // 电子科技大学
 http://mirrors.stuhome.net/centos/

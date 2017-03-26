@@ -1,0 +1,5 @@
+#/usr/local/php7/bin/php
+
+echo 'this file is php';
+
+exit 0;

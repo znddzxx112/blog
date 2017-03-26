@@ -90,3 +90,24 @@ fi
 if [[ -G '/root/mount.sh' ]]; then
 	echo 'group is root'
 fi
+
+# if机构
+num=1
+if [[ $num -lt 1 ]]; then
+	echo '$nun less than 1'
+elif [[ $num -eq 1 ]]; then
+	echo '$num equal 1'
+else
+	echo '$num greater than 1'
+fi
+
+# case 操作
+char=y
+case $char in
+	Y|y )
+	echo "char is y or Y"
+		;;
+	W|w )
+	echo "char is W or w"
+		;;
+esac

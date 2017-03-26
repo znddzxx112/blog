@@ -1,0 +1,2 @@
+- windows执行shell脚本，可通过安装git bash，然后执行
+- shell编写可通过sublime编辑器，然后通过linux挂载windows的目录执行，如果^M错误，需要vim file,然后set ff=unix

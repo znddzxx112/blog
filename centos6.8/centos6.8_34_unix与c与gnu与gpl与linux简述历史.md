@@ -14,3 +14,36 @@
 - 更多的人开始在linux上写程序并分享出来，linux在内核为基础上，有一个个好用的工具，逐步庞大
 - linux确实是linux is not unix
 - linux上的软件，逐步通过 ./configure,make,make install,make clean的安装方式
+
+
+- linux Distributions(linux 发行版)
+- 分为二大系统,按照安装软件的区别
+```
+rpm方式 red hat，fedora，centos
+dpkg方法 debian，ubuntu
+（安装软件还可以通过源码安装，毕竟linux kernel就是这样安装起来的）
+```
+
+```
+linux distrubutions = linux kernel+ software + tools
+```
+```
+linux kernel:www.kernel.org
+centos:www.centos.org
+ubuntu:www.ubuntu.com
+```
+```
+linux 是一个多任务，多用户的操作系统（运行在x86架构的硬件系统）
+实现的标准是美国IEEE电气电子工业学会提出的标准，关于可携式操作系统接口POSIX
+http://www.ieee.org/index.html
+```
+- linux主要的二个标准LSB，FHS
+
+
+- linux的开机流程
+```
+1. BIOS 根据记录的启动顺序去找介质
+2. CPU读取主引导分区Master Boot Record中的加载程序
+3. 加载程序Boot Loader读取具体分区扇区
+4. 扇区的内核程序开始启动
+```

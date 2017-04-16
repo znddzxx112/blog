@@ -36,6 +36,12 @@ mb_strlen($str, 'UTF-8');
 # http://php.net/manual/zh/mbstring.supported-encodings.php
 ```
 
+- 注意mb_string 需要多字节字符支持
+```
+# ./configure --enable-mbstring
+# make && make install
+```
+
 
 - utf8，3个字节表示中文
 ```

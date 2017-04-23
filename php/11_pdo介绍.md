@@ -12,6 +12,8 @@
 \PDOException
 ```
 
+- 参照pdo/
+
 - 第一步：pdo类初始化
 ```
 pdo construct(dsn, username, password, options=array());

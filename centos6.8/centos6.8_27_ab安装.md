@@ -34,6 +34,13 @@ cd /usr/bin
 
 http://localhost/index.php 表示这写请求的目标URL
 
+增加cookies
+多个 -C 参数即可
+ab -C cookie_name1=cookie_value1 -C cookie_name2=cookie_value2 ...
+
+或者可以用 -H 参数实现
+ab -H "Cookie: cookie_name1=cookie_value1;cookie_name2=cookie_value2;"
+
 测试结果也一目了然，测试出的吞吐率为：Requests per second: 2015.93 [#/sec] (mean)  初次之外还有其他一些信息。
 
 Server Software 表示被测试的Web服务器软件名称

@@ -22,3 +22,13 @@ do
     程序段
 done
 ```
+
+- for example
+```
+#!/bin/bash
+
+for((i=0;i<=100;i++))
+do
+    // ...
+done
+```

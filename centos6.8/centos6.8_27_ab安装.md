@@ -124,3 +124,14 @@ Percentage of the requests served within a certain time (ms)
   99%    115
  100%    115 (longest request)
 ```
+
+- 压测结果分析以及之间的关系
+```
+-c 10 //并发10 -n 100 //请求总数
+Requests per second:    427.97 [#/sec] (mean) // 代表每秒能承受的业务数
+Time per request:       23.366 [ms] (mean) // 每个请求花费的时间
+Time per request:       2.337 [ms] (mean, across all concurrent requests)
+关系
+Time per request:       2.337 [ms] (mean, across all concurrent requests) * 并发数 = Time per request:       23.366 [ms] (mean)
+请求总数 / Time per request:23.366 [ms] (mean) // 每个请求花费的时间  = Requests per second: 427.97 [#/sec] (mean) // 代表每秒能承受的业务数
+```

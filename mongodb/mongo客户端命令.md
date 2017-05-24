@@ -71,8 +71,8 @@ db.shutdownServer();
 
 ##### 修改操作
 ```
->db.CollectionName.update({name:"mongo"},{$set:{name:"mongo_new"}) //只更新一条
->db.CollectionName.update({name:"mongo"},{$set:{name:"mongo_new"},false,true) //更新多条
+>db.CollectionName.update({name:"mongo"},{$set:{name:"mongo_new"}}) //只更新一条
+>db.CollectionName.update({name:"mongo"},{$set:{name:"mongo_new"}},false,true) //更新多条
 ```
 
 ###### 删除操作

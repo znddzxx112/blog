@@ -22,3 +22,9 @@ mysqladmin -uwww -pwww processlist
 ```
 # mysqlshow -uwww -pwww mysql user host
 ```
+
+- mysqlimport 导入文本数据到表中
+```
+mysqlimport -uwww -p --local phpdb /tmp/article
+
+```

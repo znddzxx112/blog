@@ -11,6 +11,18 @@ InnoDB、BDB、MEMORY 等）对每个表至少支持 16 个索引，总索引长
 - MyISAM 和 InnoDB 存储引擎的表默认创建的都是 BTREE 索引
 - PRIMARY KEY、UNIQUE、INDEX 和 FULLTEXT
 
+> 什么样的列适合建索引
+```
+列经常被放在where后面
+列数据区分度高count(distinct col) / count(col) 尽可能大
+```
+
+> 什么情况下会使用索引
+```
+where后面 = > < >= <= like 'a%'不以%开头
+index(a,b)建立组合索引，mysql实际创建二个索引（a,b）(a)， 也就是说 where a=,b= where a=都会使用这个索引，但where b=不会
+```
+
 > 创建索引
 
 ```
@@ -22,13 +34,23 @@ col_name [(length)] [ASC | DESC]
 
 create index cityname on city (city(10));
 ```
+```
+create index title_index  using [btree | hash] on article(`title`);
+```
+
+> 查看一张表建立已建立索引
+```
+show create table article;
+```
 
 > 索引的删除
 
 ```
 DROP INDEX index_name ON tbl_name
 ```
-
+```
+drop index title_index on article;
+```
 - 搜索的索引列， 不一定是所要选择的列.最适合索引的列是出现在 WHERE
 子句中的列，或连接子句中指定的列，
 

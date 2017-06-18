@@ -1,5 +1,5 @@
 ```
-create user 'repl'@'192.168.0.%' identified by 'Caokelei@123';
+create user 'repl'@'192.168.0.%' identified by 'Caxxx@123';
 grant REPLICATION SLAVE ON *.* TO 'repl'@'192.168.0.%';
 show grants for 'repl'@'192.168.0.%';
 ```
@@ -23,7 +23,7 @@ CHANGE MASTER TO MASTER_LOG_FILE='mysql-bin.000007', MASTER_LOG_POS=779;
 ```
 mysql> change master to master_host='192.168.0.119',
     -> master_user='repl',
-    -> master_password='Caokelei@123',
+    -> master_password='Caxxx@123',
     -> master_log_file='mysql-bin.000007',
     -> master_log_pos=779;
 

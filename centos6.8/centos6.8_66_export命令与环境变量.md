@@ -4,6 +4,11 @@
  export foo=bar
  ```
  
+ - 打印当前shell的所有变量
+ ```
+ export -p
+ ```
+ 
  - 设置全局的环境变量
  ```
  vim /etc/profile

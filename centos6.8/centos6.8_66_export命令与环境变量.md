@@ -1,6 +1,6 @@
  - export
  ```
- 变量导出
+ 变量导出,当前shell往后运行的脚本都可以继承该变量
  export foo=bar
  ```
  

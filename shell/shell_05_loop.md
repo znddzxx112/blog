@@ -32,3 +32,12 @@ do
     // ...
 done
 ```
+
+- foreach
+```
+calNum=(1 2 3 4); 
+for num in ${calNum[*]}
+do
+        echo ${num};
+done
+```

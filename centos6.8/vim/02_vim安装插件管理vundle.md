@@ -21,6 +21,7 @@ filetype off                  " 必须要添加
 
  " 让vundle管理插件版本,必须
  Plugin 'VundleVim/Vundle.vim'
+ Plugin 'VundleVim/taglist.vim'
 
  " 以下范例用来支持不同格式的插件安装.
  " 请将安装插件的命令放在vundle#begin和vundle#end之间.
@@ -46,9 +47,20 @@ filetype off                  " 必须要添加
  call vundle#end()            " 必须
  filetype plugin indent on    " 必须
  autocmd VimEnter * NERDTree
+ autocmd VimEnter * TlistOpen
  " 加载vim自带和插件相应的语法和文件类型相关脚本
  " 忽视插件改变缩进,可以使用以下替代:
  filetype plugin on
+ """"""""""""""""""""""""""""""
+    " Tag list (ctags)
+ """"""""""""""""""""""""""""""
+  let Tlist_Ctags_Cmd = '/usr/bin/ctags'
+  let Tlist_Show_One_File = 1
+ "不同时显示多个文件的tag，只显示当前文件的
+  let Tlist_Exit_OnlyWindow = 1
+ "如果taglist窗口是最后一个窗口，则退出vim
+  let Tlist_Use_Right_Window = 1
+ "在右侧窗口中显示taglist窗口
  "
  " 常用的命令
  " :PluginList       - 列出所有已配置的插件

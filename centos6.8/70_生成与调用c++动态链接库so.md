@@ -70,3 +70,21 @@ vim /etc/ld.so.conf.d/testso.conf
 chmod 744 testsomain
 ./testsomain
 ```
+
+- 为上述操作编写Makefile
+```
+USER_TESTSO_DIR=/home/xxx/src/cpp
+
+libtestso.so: testso.cpp
+        g++ -shared -fPIC -o libtestso.so testso.cpp
+
+testsomain: testsomain.cpp
+        g++ -o testsomain testsomain.cpp -ltestso -L${USER_TESTSO_DIR}
+
+install: testsomain
+        chmod 744 testsomain
+
+clean: testsomain
+        rm testsomain
+        rm libtestso.so
+```

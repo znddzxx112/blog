@@ -23,3 +23,8 @@ sed -n '1,3p' tea.php
 ```
 sed -n '1,$p' tea.php
 ```
+
+- 打印全部行并输出对应的行号
+```
+sed -n '1,${=;p}' tea.php
+```

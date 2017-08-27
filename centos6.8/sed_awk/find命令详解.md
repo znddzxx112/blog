@@ -26,7 +26,8 @@
  find -type f -mtime -5
 // 模糊查询
 find -name "*um*" -type f -mtime -5 
+// 当前目录查找
+find . ! -name "." -type d -prune -o -type f -print
  ```
 
- 
  

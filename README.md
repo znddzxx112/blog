@@ -16,7 +16,7 @@ focus on php，golang，centos，nginx，docker ...
  - 《学会提问》
  - 《mongodb实战》
  - 《Effective MySQL之SQL语句最优化》(阅读中...)
- -  《罗伯特议事规则（第十版中译本）》(阅读中...)
+ -  《罗伯特议事规则（第十版中译本）》
  - 《unix环境高级编程》
  
  ##### 等待

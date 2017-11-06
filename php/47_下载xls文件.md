@@ -10,5 +10,9 @@ fclose($outputBuffer);
 
 > 方式二
 ```
+$filename = "resolved_" . date('YmdHis') . '.xls';
+header("Content-type: application/x-xls");
+header("Content-Disposition: attachment; filename={$filename}");
 $filecontent = file_get_content("$filename");
+echo $filecontent;
 ```

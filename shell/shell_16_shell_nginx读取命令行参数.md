@@ -1,3 +1,8 @@
+
+```
+# 在其他shell脚本中使用以下代码
+. auto/option #即可
+```
 ```
 help=
 NGX_PREFIX=

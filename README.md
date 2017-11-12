@@ -17,9 +17,10 @@ focus on php，golang，centos，nginx，docker ...
  - 《Effective MySQL之SQL语句最优化》
  -  《罗伯特议事规则（第十版中译本）》
  - 《unix环境高级编程》
+ - 《linux shell编程》
  
  ##### 等待
- - 《linux shell编程》
+
  - 《高性能mysql第三版》
  - 《Go并发编程实战》
  - 《人月神话》

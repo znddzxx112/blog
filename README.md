@@ -18,13 +18,17 @@ focus on php，golang，centos，nginx，docker ...
  -  《罗伯特议事规则（第十版中译本）》
  - 《unix环境高级编程》
  - 《linux shell编程》
+ - 《图解HTTP》
  
  ##### 等待
 
+ - 《精通nginx第二版》
+ - 《git权威指南》
+ - 《mysql5.7从入门到精通》
  - 《高性能mysql第三版》
+ - 《HTTP权威指南》
  - 《Go并发编程实战》
  - 《人月神话》
- - 《git权威指南》
 
 
 ###### phper

@@ -19,6 +19,7 @@ focus on php，golang，centos，nginx，docker ...
  - 《unix环境高级编程》
  - 《linux shell编程》
  - 《图解HTTP》
+ - 《OpenSSL与网络信息安全-基础、结构和指令》
  
  ##### 等待
 

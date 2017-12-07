@@ -20,12 +20,12 @@ focus on php，golang，centos，nginx，docker ...
  - 《linux shell编程》
  - 《图解HTTP》
  - 《OpenSSL与网络信息安全-基础、结构和指令》
+ - 《mysql5.7从入门到精通》
  
  ##### 等待
 
  - 《精通nginx第二版》
  - 《git权威指南》
- - 《mysql5.7从入门到精通》
  - 《高性能mysql第三版》
  - 《HTTP权威指南》
  - 《Go并发编程实战》

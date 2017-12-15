@@ -88,3 +88,23 @@ clean: testsomain
         rm testsomain
         rm libtestso.so
 ```
+
+- c/c++头文件
+```
+c/c++ 头文件里面 主要干哪些事情？
+1. 常量生成 def TESTSO_H
+2. 类，类方法声明
+3. 结构体定义
+```
+
+- extern "C" 作用
+```
+在c++的cpp中要使用c的头文件需要声明，防止c++进行编译时报错
+#ifdef __cplusplus
+extern "C" {
+#endif
+            #include </>
+#ifdef __cplusplus
+}
+#endif
+```

@@ -1,0 +1,6 @@
+mongodb php选择mongo扩展
+memcache php选择memcached扩展
+redis php选择phpredis扩展
+zookeeper php选择zookeeper
+正则 php选用pecl函数 preg_开头函数
+全文搜索 php选用sphinx

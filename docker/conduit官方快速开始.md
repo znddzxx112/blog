@@ -3,6 +3,22 @@
 https://www.katacoda.com/courses/kubernetes/playground
 ```
 
+## 总览 Conduit overview
+```
+Conduit is an ultralight service mesh for Kubernetes. It makes running services on Kubernetes safer and more reliable by transparently managing the runtime communication between services. It provides features for observability, reliability, and security—all without requiring changes to your code.
+Conduit基于Kubernetes的轻量级服务网格。 通过透明地管理服务之间的运行时间通信，它使Kubernetes上的运行服务更安全，更可靠。 它提供了可观察性，可靠性和安全性的功能 - 无需更改代码。
+
+The Conduit service mesh is deployed on a Kubernetes cluster as two basic components: a data plane and a control plane. The data plane carries the actual application request traffic between service instances. The control plane drives the data plane and provides APIs for modifying its behavior (as well as for accessing aggregated metrics). The Conduit CLI and web UI consume this API and provide ergonomic controls for human beings.
+
+Conduit服务网格作为两个基本组件部署在Kubernetes集群上：数据平面和控制平面。数据平面承载服务实例之间的实际应用请求流量。控制平面驱动数据平面，并提供用于修改其行为的API（以及访问聚合度量标准）。 Conduit CLI和Web UI使用此API并为人类提供人体工程学控制。
+
+These proxies transparently intercept communication to and from each pod, and add features such as retries and timeouts, instrumentation, and encryption (TLS), as well as allowing and denying requests according to the relevant policy.
+这些代理透明地拦截每个Pod的通信，并添加重试和超时，检测和加密（TLS）等功能，并根据相关策略允许和拒绝请求。
+
+控制面板职责1.请求策略2.权限验证
+```
+
+
 ## Getting Started
 
 - 安装命令

@@ -19,7 +19,7 @@ These proxies transparently intercept communication to and from each pod, and ad
 ```
 
 
-## Getting Started
+## 快速开始【Getting Started】
 
 - 安装命令
 ```

@@ -3,6 +3,11 @@
 https://www.katacoda.com/courses/kubernetes/playground
 ```
 
+- Conduit中文文档
+```
+http://conduit.doczh.cn/
+```
+
 ## 总览 Conduit overview
 ```
 Conduit is an ultralight service mesh for Kubernetes. 

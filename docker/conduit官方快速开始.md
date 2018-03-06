@@ -244,7 +244,8 @@ Join us on the #conduit channel in Linkerd slack https://slack.linkerd.io/
 ## 总结
 ```
 Conduit 是从头开始的，目标是成为最快、最轻、最简单并且最安全的 Service Mesh。
-他使用 Rust 构建了快速、安全的数据平面，用 Go 开发了简单强大的控制平面，总体设计围绕着性能、安全性和可用性进行。
+他使用 Rust 构建了快速、安全的数据平面，
+用 Go 开发了简单强大的控制平面，总体设计围绕着性能、安全性和可用性进行。
 为什么要做一个 Conduit？Linkerd 是世界上最多生产级部署的 Service Mesh。
 
 Conduit 是让微服务安全可靠的下一代 Service Mesh。
@@ -252,7 +253,7 @@ Conduit 是让微服务安全可靠的下一代 Service Mesh。
 还是跟 Linkerd 相仿，他的数据平面是在应用代码之外运行的轻量级代理，控制平面是一个高可用的控制器。
 然而和 Linkerd 不同的是，Conduit 的设计更加倾向于 Kubernetes 中的低资源部署。
 
-Linkrd最早出现的Service,生产级别的产品.
+Linkrd最早出现的Service mesh,生产级别的产品.
 当前linkrd和envoy 都和istio集成，成为istio的数据面板.
 Istio/Conduit 属于非侵入式的Service Mesh属于第二代.
 

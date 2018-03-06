@@ -137,7 +137,7 @@ db.things.find({x:{$nin: [2,4,6]}});
 
 ##### 正则表达式匹配
 ```
-db.users.find({name: {$not: /^B.*/}});
+db.users.find({name: {$regex: /^B.*/}});
 ```
 
 ##### skip限制返回记录的起点

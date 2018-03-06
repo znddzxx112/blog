@@ -3,7 +3,7 @@
 rs.slaveOk();
 print("pid,title,userid,videoUrl");
 db.debate.find({videoUrl:{$regex:/videoreplay/},valid:1}).forEach(function(debate){
-        print("#" + debate.pid + ",#" + debate.title + ",#" + debate.userid + ",#" + debate.videoUrl);
+        print(debate._id.valueOf() + debate.pid + "," + debate.title + "," + debate.userid + "," + debate.videoUrl);
 });
 ```
 

@@ -62,6 +62,7 @@ db.shutdownServer();
 >db.CollectionName.find({},{}).pretty() 第一个大括号为查询条件,第二个大括号为要输出的字段,要输出的字段就将其值设为1,没写的字段默认为不输出,_id字段默认为总是输出,如果不想输出就将其值设为0
 >db.CollectionName.find({}).count() 输出查询到的数据的条数
 >db.CollectionName.findOne({});
+>db.CollectionName,find({},{name:1,title:1}); 显示name字段，title字段
 获取一条
 >db.CollectionName.find().count();
 获取到的总条数数量

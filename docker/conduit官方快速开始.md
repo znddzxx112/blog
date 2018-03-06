@@ -5,16 +5,27 @@ https://www.katacoda.com/courses/kubernetes/playground
 
 ## 总览 Conduit overview
 ```
-Conduit is an ultralight service mesh for Kubernetes. It makes running services on Kubernetes safer and more reliable by transparently managing the runtime communication between services. It provides features for observability, reliability, and security—all without requiring changes to your code.
-Conduit基于Kubernetes的轻量级服务网格。 通过透明地管理服务之间的运行时间通信，它使Kubernetes上的运行服务更安全，更可靠。 它提供了可观察性，可靠性和安全性的功能 - 无需更改代码。
+Conduit is an ultralight service mesh for Kubernetes. 
+It makes running services on Kubernetes safer and more reliable by transparently managing the runtime communication between services. 
+It provides features for observability, reliability, and security—all without requiring changes to your code.
+Conduit基于Kubernetes的轻量级服务网格。 
+通过透明地管理服务之间的运行时间通信，它使Kubernetes上的运行服务更安全，更可靠。 
+它提供了可观察性，可靠性和安全性的功能 - 无需更改代码。
 
-The Conduit service mesh is deployed on a Kubernetes cluster as two basic components: a data plane and a control plane. The data plane carries the actual application request traffic between service instances. The control plane drives the data plane and provides APIs for modifying its behavior (as well as for accessing aggregated metrics). The Conduit CLI and web UI consume this API and provide ergonomic controls for human beings.
+The Conduit service mesh is deployed on a Kubernetes cluster as two basic components: a data plane and a control plane.
+The data plane carries the actual application request traffic between service instances. 
+The control plane drives the data plane and provides APIs for modifying its behavior (as well as for accessing aggregated metrics). 
+The Conduit CLI and web UI consume this API and provide ergonomic controls for human beings.
+Conduit服务网格作为两个基本组件部署在Kubernetes集群上：数据平面和控制平面。
+数据平面承载服务实例之间的实际应用请求流量。
+控制平面驱动数据平面，并提供用于修改其行为的API（以及访问聚合度量标准）。 
+Conduit CLI和Web UI使用此API并为人类提供人体工程学控制。
 
-Conduit服务网格作为两个基本组件部署在Kubernetes集群上：数据平面和控制平面。数据平面承载服务实例之间的实际应用请求流量。控制平面驱动数据平面，并提供用于修改其行为的API（以及访问聚合度量标准）。 Conduit CLI和Web UI使用此API并为人类提供人体工程学控制。
-
-These proxies transparently intercept communication to and from each pod, and add features such as retries and timeouts, instrumentation, and encryption (TLS), as well as allowing and denying requests according to the relevant policy.
-这些代理透明地拦截每个Pod的通信，并添加重试和超时，检测和加密（TLS）等功能，并根据相关策略允许和拒绝请求。
-
+These proxies transparently intercept communication to and from each pod, 
+and add features such as retries and timeouts, instrumentation, 
+and encryption (TLS), as well as allowing and denying requests according to the relevant policy.
+这些代理透明地拦截每个Pod的通信，并添加重试和超时，
+检测和加密（TLS）等功能，并根据相关策略允许和拒绝请求。
 控制面板职责1.请求策略2.权限验证
 ```
 
@@ -24,20 +35,21 @@ These proxies transparently intercept communication to and from each pod, and ad
 - 安装命令
 ```
 // 确认k8s版本 要求1.8以上
- $ kubectl version --short
+$ kubectl version --short
 // 安装conduit
- $ curl https://run.conduit.io/install | sh
- $ export PATH=$PATH:$HOME/.conduit/bin
- $ conduit version
+$ curl https://run.conduit.io/install | sh
+$ export PATH=$PATH:$HOME/.conduit/bin
+$ conduit version
 // 使用默认的命名空间安装控制面板
- $ conduit install | kubectl apply -f -
- $ conduit dashboard
+$ conduit install | kubectl apply -f -
+$ conduit dashboard
 ```
 
 - 安装实例app
 ```
-$ curl https://raw.githubusercontent.com/runconduit/conduit-examples/master/emojivoto/emojivoto.yml | conduit inject - | kubectl apply -f -
-
+$ curl https://raw.githubusercontent.com/runconduit/conduit-examples/master/emojivoto/emojivoto.yml | 
+   conduit inject - | 
+   kubectl apply -f -
 $ kubectl get svc web-svc -n emojivoto -o jsonpath="{.status.loadBalancer.ingress[0].*}"
 ```
 
@@ -52,16 +64,18 @@ $ conduit tap deploy emojivoto/voting
 
 - 先决条件
 ```
+1. Applications that use WebSockets or HTTP tunneling/proxying (use of the HTTP CONNECT method), 
+   or plaintext MySQL, SMTP, or other protocols where the server sends data before the client sends data, 
+   require additional configuration. See the Protocol Support section below.
+1. 应用使用websocket 或者 http 隧道,http2 以及那些服务器能够主动推送的协议
 
-    1. Applications that use WebSockets or HTTP tunneling/proxying (use of the HTTP CONNECT method), 
-    or plaintext MySQL, SMTP, or other protocols where the server sends data before the client sends data, 
-    require additional configuration. See the Protocol Support section below.
-    1. 应用使用websocket 或者 http 隧道,http2 以及那些服务器能够主动推送的协议
-    gRPC applications that use grpc-go must use grpc-go version 1.3 or later due to a bug in earlier versions.
-    2. 如果是gRpc应用, grpc-go version 1.3 or later
-    3. Conduit doesn’t yet support external DNS lookups (e.g. proxying a call to a third-party API). 
-    This will be addressed in an upcoming release.
-    3. Conduit 暂不支持其他的第三方dns发现，但是会在下一次版本中支持。
+2.gRPC applications that use grpc-go must use grpc-go version 1.3 or later 
+  due to a bug in earlier versions.
+2. 如果是gRpc应用, grpc-go version 1.3 or later
+
+3. Conduit doesn’t yet support external DNS lookups 
+(e.g. proxying a call to a third-party API). This will be addressed in an upcoming release.
+3. Conduit 暂不支持其他的第三方dns发现，但是会在下一次版本中支持。
 ```
 
 - 使用配置文件增加服务
@@ -72,18 +86,20 @@ deployment.yml 配置文件中包含应用的信息，切换和回滚更新，�
 - 协议支持
 ```
 支持使用http2.0 websocket的应用
- However, non-HTTPS WebSockets and HTTP tunneling/proxying 
- (use of the HTTP CONNECT method)
- currently require manual configuration to disable the layer 7 features for those connections.
- 非https的webscokets和http隧道协议，当前需要手动管理和配置。
- For pods that accept incoming CONNECT requests and/or incoming WebSocket connections, 
- use the --skip-inbound-ports flag when running conduit inject. 
- For pods that make outgoing CONNECT requests and/or outgoing WebSocket connections, use the --skip-outbound-ports flag when running conduit inject
- 对于使用websocket链接的端口，需要命令
- conduit inject deployment.yml --skip-inbound-ports=80,7777 | kubectl apply -f -
+However, non-HTTPS WebSockets and HTTP tunneling/proxying (use of the HTTP CONNECT method)
+currently require manual configuration to disable the layer 7 features for those connections.
+非https的webscokets和http隧道协议，当前需要手动管理和配置。
+
+For pods that accept incoming CONNECT requests and/or incoming WebSocket connections, 
+use the --skip-inbound-ports flag when running conduit inject. 
+For pods that make outgoing CONNECT requests and/or outgoing WebSocket connections, 
+use the --skip-outbound-ports flag when running conduit inject
+
+对于使用websocket链接的端口，需要命令
+conduit inject deployment.yml --skip-inbound-ports=80,7777 | kubectl apply -f -
  
- 对于不使用http的链接，比如mysql(3306)需要命令：
- conduit inject deployment.yml --skip-outbound-ports=3306 | kubectl apply -f -
+对于不使用http的链接，比如mysql(3306)需要命令：
+conduit inject deployment.yml --skip-outbound-ports=3306 | kubectl apply -f -
 ```
 
 ## 调试应用【debugging an app】
@@ -102,37 +118,32 @@ $ conduit tap deploy emojivoto/voting --path /emojivoto.v1.VotingService/VotePoo
 ## 导出变量到Prometheus【Exporting metrics to Prometheus】
 ```
 Prometheus 是k8s的监控方案
-对于单机的Linux服务器监控，已经有了Nagios，Zabbix这些成熟的方案。 在Kubernetes集群中，我们使用新一代的监控系统Prometheus来完成集群的监控。
+对于单机的Linux服务器监控，已经有了Nagios，Zabbix这些成熟的方案。 
+在Kubernetes集群中，我们使用新一代的监控系统Prometheus来完成集群的监控。
 Prometheus集成了数据采集，存储，异常告警多项功能，是一款一体化的完整方案。
 ```
 
 ## 生产环境部署【road to production】
 ```
 We’ll make alpha / beta / GA designations based on actual community usage.
-有alpha/beta/GA 版本，采用社区化运作
+有alpha/beta/GA 版本，采用社区化运作.
+
 公布了版本发布时间表
 0.3: Telemetry Stability
 Late February 2018
 Visibility
-
     Stable, automatic top-line metrics for small-scale clusters.
     稳定，自动化，针对为小型集群
-
 Usability
-
     Routing to external DNS names
     DNS路由
-
 Reliability
-
     Least-loaded L7 load balancing
     7层负载
     Improved error handling
     错误处理
     Improved egress support
-
 Development
-
     Published (this) public roadmap
     All milestones, issues, PRs, & mailing lists made public
 
@@ -140,12 +151,9 @@ Development
     自动TLS,更好支持prometheus框架
 Late March 2018
 Usability
-
     Helm integration
     Mutating webhook admission controller
-
 Security
-
     Self-bootstrapping Certificate Authority
     Secured communication to and within the Conduit control plane
     Automatically provide all meshed services with cryptographic identity
@@ -154,16 +162,12 @@ Security
      与Conduit控制平面之间以及内部的安全通信
      自动提供具有加密身份的所有网状服务
      自动保护所有网状通信
-
 Visibility
-
     Enhanced server-side metrics, including per-path and per-status-code counts & latencies.
     Client-side metrics to surface egress traffic, etc.
     增强的服务器端指标，包括每路径和每个状态码计数和延迟。
     客户端指标用于表面出口流量等
-
 Reliability
-
     Latency-aware load balancing
     延迟负载均衡
 
@@ -171,21 +175,16 @@ Reliability
     可控制的截止和超时
 Early April 2018
 Reliability
-
     Controllable latency objectives to configure timeouts
     Controllable response classes to inform circuit breaking, retryability, & success rate calculation
     High-availability controller
     可控延迟目标来配置超时
     可控响应类，用于通知断路，重试和成功率计算
     高可用性控制器
-
 Visibility
-
     OpenTracing integration
     OpenTracing集成
-
 Security
-
     Mutual authentication
     Key rotation
     相互认证
@@ -195,26 +194,19 @@ Security
 可控响应分类和重试
 Late April 2018
 Reliability
-
     Automatic alerting for latency & success objectives
     自动延迟和成功提醒
     Controllable retry policies
     可控制的重试策略
-
 Routing
-
     Rich ingress routing
     Contextual route overrides
     丰富的入口路由
     上下文路由覆盖
-
 Security
-
     Authorization policy
     授权政策
-
 And Beyond:
-
     Controller policy plugins
     Support for non-Kubernetes services
     Failure injection (aka “chaos chihuahua”)
@@ -232,11 +224,10 @@ And Beyond:
 
 ## 参与方式
 ```
-    Conduit on Github
-    Join us on the #conduit channel in Linkerd slack https://slack.linkerd.io/
-    邮件列表：
-        Users list: conduit-users@googlegroups.com
-        Developers list: conduit-dev@googlegroups.com
-        Announcements: conduit-announce@googlegroups.com
-
+Conduit on Github
+Join us on the #conduit channel in Linkerd slack https://slack.linkerd.io/
+邮件列表：
+   Users list: conduit-users@googlegroups.com
+   Developers list: conduit-dev@googlegroups.com
+   Announcements: conduit-announce@googlegroups.com
 ```

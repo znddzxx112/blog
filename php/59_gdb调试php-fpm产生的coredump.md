@@ -35,4 +35,7 @@ zmemcheck
  ```
  (gdb)f 0 //打印栈顶信息
  (gdb)f 1
+ (gdb)p *execute_data->func->common->function_name.val@7 //打印执行的函数名称
+ (gdb)p *execute_data->func.op_array->filename.val@27 //打印执行的文件名称
+ 
  ```

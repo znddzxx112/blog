@@ -6,6 +6,8 @@
 # cd /usr/local/src
 # wget http://cn2.php.net/get/php-7.1.0.tar.gz/from/this/mirror
 # mv mirror php-7.1.0.tar.gz
+// curl命令替代上面二步
+# curl -sSL -o php-7.1.20.tar.gz http://cn2.php.net/get/php-7.1.20.tar.gz/from/this/mirror
 # tar -zxvf php-7.1.0.tar.gz 
 # cd php-7.1.0
 

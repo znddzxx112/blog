@@ -8,7 +8,7 @@ https://laravel-china.org/docs/composer/2018
 # curl -sSL -o php-7.1.20.tar.gz http://cn2.php.net/get/php-7.1.20.tar.gz/from/this/mirror
 # tar -zxvf php-7.1.20.tar.gz
 # cd php-7.1.20
-# ./configure --prefix=/usr/local/php71 -enable-fpm --with-openssl --with-zlib
+# ./configure --prefix=/usr/local/php71 -enable-fpm --with-openssl --with-zlib --enable-mbstring  --with-curl=/usr/bin/ --enable-opcache
 # make && make install
 # cp /usr/local/src/php-7.1.0/php.ini-production /usr/local/php7/etc/php.ini
 ```

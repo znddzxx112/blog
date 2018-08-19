@@ -22,3 +22,8 @@ https://laravel-china.org/docs/composer/2018
 # php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 # php -r "unlink('composer-setup.php');"
 ```
+
+- php软链
+```
+# ln -s /usr/local/php71/bin/php /usr/local/bin/
+```

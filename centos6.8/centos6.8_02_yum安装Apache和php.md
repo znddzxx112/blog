@@ -1,6 +1,4 @@
-#### centos6.8服务器配置
-
-##### 安装Apache软件[yum]
+##### yum安装Apache软件
 
 ###### 语句
 ```
@@ -27,8 +25,6 @@
 ###### 配置Apache服务
 ```
 # vi /etc/httpd/conf/httpd.conf
-
-// 源代码手动编译安装，路径可指定
 ```
 
 ###### 设置连接时间
@@ -71,13 +67,13 @@ ServerName www.example.com:80
 ###### 配置KeepAlive传输请求
 
 ```
-KeepAlive on // 多个tcp变为一个tcp
+KeepAlive on
 ```
 
 ###### 配置MaxKeepAliveRequests连接数
 
 ```
-MaxKeepAliveRequests 100 // 每个tcp最大的请求数量
+MaxKeepAliveRequests 100
 ```
 
 ##### Apache支持SSL
@@ -145,7 +141,7 @@ http://www.bjca.org.cn/
 # rpm -qa | grep php
 ```
 
-###### 安装php[yum]
+###### yum安装php
 
 ```
 # yum install php php-gd -y

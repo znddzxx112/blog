@@ -9,6 +9,7 @@
 Require all granted 替换 Require all denied
 根据上下文修改 <Directory "/usr/local/httpd/htdocs/wordpress">
 根据上下文修改     DirectoryIndex index.php index.html
+
 # vi /etc/httpd/extra/httpd-vhosts.conf
 <VirtualHost wordpress.example.com:80>
     ServerAdmin admin@xx.com

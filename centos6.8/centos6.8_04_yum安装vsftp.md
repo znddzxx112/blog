@@ -4,8 +4,8 @@
 - 参考文章：http://www.jb51.net/article/47795.htm
 
 ##### 传文件的几种方式
-- scp 利用ssh传文件
-- ftp 
+- scp 可以传文件
+- ftp 可以传文件，vsftp:very secure ftp
 
 ##### 判断是否安装
 
@@ -43,6 +43,7 @@
 
 - /etc/vsftpd/user_list 文件中指定的用户是否可以访问ftp服务器由vsftpd.conf文件中的userlist_deny的取值来决定。 
 
+- 设置用来上传代码的用户
 ```
 # groupadd www
 // 设置不可切换
@@ -50,7 +51,9 @@
 # useradd www -d /usr/local/src/bitcao -s /sbin/nologin -g www
 # passwd www //设置登录密码
 # chown -R bitcao:www /usr/local/src/bitcao
+```
 
+```
 // 设置软链接，上传代码处连接此处
 # ln -s /usr/local/httpd/htdocs/ /usr/local/src/bitcao/
 
@@ -76,17 +79,6 @@ www // 写上www不能出根目录
 
 // 加上硬链接
 # ln  /usr/local/src/* /home/www/
-```
-
-##### 限制连接ip(尚未实践)
-
-```
-# vi /etc/vsftpd/vsftpd.conf  
-tcp_wrappers=yes    // 限制ip地址
-# vi /etc/hosts.deny    // 限制
-vsfpd:all:deny
-# vi /etc/hosts.allow
-vsfpd:192.168.1.*:Allow
 ```
 
 ##### 服务启动与自启动

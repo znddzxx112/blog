@@ -2,14 +2,10 @@
 
 - 参考文章:http://jingyan.baidu.com/article/e5c39bf5ba78e639d760330e.html
 
-##### 本地
+##### 生成公私钥 【参考其他博客命令】
 
-> 点击Xshell菜单栏的工具，选择新建用户密钥生成向导，进行密钥对生成操作。
-
-> 给用户密钥加密的密码
 
 ##### 服务器上
-
 
 ```
 # vi /etc/ssh/sshd_config

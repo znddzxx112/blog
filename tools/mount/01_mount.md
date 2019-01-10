@@ -27,3 +27,13 @@ umount //10.0.4.13/sns
 强制卸载
 umount -f //10.0.4.13/sns
 ```
+
+* 挂载/卸载
+```
+挂载
+mount -t cifs -o username=share,password=share,uid=500,gid=501,dir_mod=0777,file_mode=0777 //10.0.4.13/sns
+卸载sns
+mount -l /home/caokelei/sns
+强制卸载
+mount -f /home/caokelei/sns
+```

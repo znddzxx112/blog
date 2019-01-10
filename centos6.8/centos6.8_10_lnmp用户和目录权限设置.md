@@ -10,7 +10,7 @@ listen.group = game01
 user=game01
 group=game01
 
-nginx使用www运行:
+nginx使用www运行,并将www放入game01组:
 usermod -aG game01 www
 
 文件夹权限和所有权,fpm有所有权限，www只有读的权限即可:

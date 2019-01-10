@@ -34,14 +34,14 @@ redis-check-dump | rdb文件检查工具
 ##### 编译安装
 
 ```
-# cd /usr/local/src/
-# tar zxvf redis-3.2.3.tar.gz
-# cd redis-3.2.3
-# make 
-# mkdir /usr/local/redis
-# cp ./src/redis-server /usr/local/redis/
-# cp ./src/redis-cli /usr/local/redis/
-#  cp ./redis.conf /usr/local/redis/6379.conf
+# cd /usr/local/src/ && \
+tar zxvf redis-3.2.3.tar.gz && \
+cd redis-3.2.3 && \
+make && \
+mkdir /usr/local/redis && \
+cp ./src/redis-server /usr/local/redis/ && \
+cp ./src/redis-cli /usr/local/redis/ && \
+cp ./redis.conf /usr/local/redis/6379.conf && \
 
 ```
 
@@ -107,35 +107,6 @@ CONF="/usr/local/redis/${REDISPORT}.conf"
 # service redisd start
 //关闭redis
 # service redisd stop
-```
-
-##### php扩展-phpredis
-
-> phpredis 是c写的扩展，性能比predis好
-
-> github地址：https://github.com/phpredis/phpredis
-
-> 选择最新3.0.0报错，选择2.2.8就ok，可能3.0.0还不够稳定吧
-
-```
-# cd /usr/local/src
-# wget  wget https://github.com/phpredis/phpredis/archive/2.2.8.tar.gz
-# tar -zxvf 2.2.8.tar.gz
-# cd phpredis-2.2.8/
-# /usr/local/php/bin/phpize
-# ./configure --with-php-config=/usr/local/php/bin/php-config
-# make && make install
-/usr/local/php/lib/php/extensions/no-debug-non-zts-20131226/
-// 将生成redis.so复制到扩展目录
-
-// 配置文件增加扩展
-# vi /usr/local/php/etc/php.ini
-最后添加 extension="redis.so"
-
-// 重启apache或者php-fpm
-
-// 检查是否增加扩展
-# php -m | grep redis
 ```
 
 

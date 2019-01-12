@@ -50,6 +50,8 @@ mkdir /usr/local/php7 && \
 
 // copy php.ini
 # cp /usr/local/src/php-7.1.20/php.ini-production /usr/local/php7/etc/php.ini
+// copy php.conf
+# cp /usr/local/php7/etc/php-fpm.conf.default /usr/local/php7/etc/php-fpm.conf
 
 # 非守护进程启动，docker常用
 # /usr/local/php7/sbin/php-fpm -F
@@ -62,9 +64,6 @@ source /etc/profile
 # php -v
 
 // 配置并开启php-fpm
-# cd /usr/local/php7/etc/
-# cp php-fpm.conf.default php-fpm.conf
-# vi /usr/local/php7/etc/php-fpm.conf
 // 找到pid = run/php-fpm.pid把前面的注释符号删掉。
 ;daemonize = yes 去掉;
 # mv www.conf.default www.conf

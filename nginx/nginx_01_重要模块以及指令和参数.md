@@ -16,19 +16,19 @@ $request_uri
 ngx_http_access_module
 只有二个指令 allow 和 deny
 location / {
-    			deny  192.168.1.1;
-		       allow 192.168.1.0/24;
-    			allow 10.1.1.0/16;
-    			allow 2001:0db8::/32;
-    			deny  all;
-		}
+	deny  192.168.1.1;
+    allow 192.168.1.0/24;
+	allow 10.1.1.0/16;
+	allow 2001:0db8::/32;
+	deny  all;
+}
 ```
 - ngx_http_fastcgi_module
 ```
 指令：
 fastcgi_index 设置fastcgi优先读取文件名称
 fastcgi_param 设置fastcgi变量
- fastcgi_pass 转发给fastcgi服务器
+fastcgi_pass 转发给fastcgi服务器
 fastcgi_cache fastcgi缓存
 fastcgi_temp_path 存储来自fastcgi的缓存文件目录
 变量：

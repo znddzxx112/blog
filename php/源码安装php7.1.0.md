@@ -3,15 +3,54 @@
 
 - 可参考文章：http://www.cleey.com/blog/single/id/857.html
 ```
+# yum -y install libmcrypt libmcrypt-devel libjpeg libjpeg-devel libpng curl-devel libxslt-devel libpng-devel freetype freetype-devel libxml2 libxml2-devel pcre-devel
+
 # curl -sSL -o /usr/local/src/php-7.1.20.tar.gz http://cn2.php.net/get/php-7.1.20.tar.gz/from/this/mirror && \
 tar -zxvf php-7.1.0.tar.gz && \
 cd php-7.1.0 && \
 mkdir /usr/local/php7 && \
-./configure –prefix=/usr/local/php7 –with-curl –with-freetype-dir –with-gd –with-gettext –with-iconv-dir –with-kerberos –with-libdir=lib64 –with-libxml-dir –with-mysqli –with-openssl –with-pcre-regex –with-pdo-mysql –with-pdo-sqlite –with-pear –with-png-dir –with-xmlrpc –with-xsl –with-zlib –enable-fpm –enable-bcmath –enable-libmxl –enable-inline-optimization –enable-gd-native-ttf –enable-mbregex –enable-mbstring –enable-opcache –enable-pcntl –enable-shmop –enable-soap –enable-sockets –enable-sysvsem –enable-xml –enable-zip && \
+./configure \ 
+–prefix=/usr/local/php7 \ 
+–with-curl \ 
+–with-freetype-dir \
+–with-gd \
+–with-gettext \
+–with-iconv-dir \
+–with-kerberos \
+–with-libdir=lib64 \
+–with-libxml-dir \
+–with-mysqli \
+–with-openssl \
+–with-pcre-regex \
+–with-pdo-mysql \
+–with-pdo-sqlite \
+–with-pear \
+–with-png-dir \
+–with-xmlrpc \
+–with-xsl \
+–with-zlib \
+–enable-fpm \
+–enable-bcmath \
+–enable-libmxl \
+–enable-inline-optimization \
+–enable-gd-native-ttf \
+–enable-mbregex \
+–enable-mbstring \
+–enable-opcache \
+–enable-pcntl \
+–enable-shmop \
+–enable-soap \
+–enable-sockets \
+–enable-sysvsem \
+–enable-xml \
+–enable-zip && \
 make && make install
 
 // copy php.ini
 # cp /usr/local/src/php-7.1.0/php.ini-production /usr/local/php7/etc/php.ini
+
+# 非守护进程启动，docker常用
+# /usr/local/php7/sbin/php-fpm -F
 
 // 配置环境变量
 # echo "export PATH=$PATH:/usr/local/php7/bin:/usr/local/php7/sbin" >> /etc/profile && \

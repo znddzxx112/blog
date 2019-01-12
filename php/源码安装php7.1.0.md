@@ -6,7 +6,7 @@
 # yum -y install libmcrypt libmcrypt-devel libjpeg libjpeg-devel libpng curl-devel libxslt-devel libpng-devel freetype freetype-devel libxml2 libxml2-devel pcre-devel
 
 # curl -sSL -o /usr/local/src/php-7.1.20.tar.gz http://cn2.php.net/get/php-7.1.20.tar.gz/from/this/mirror && \
-tar -zxvf /usr/local/src/php-7.1.20.tar.gz && \
+tar -zxvf /usr/local/src/php-7.1.20.tar.gz -C /usr/local/src/ && \
 cd /usr/local/src/php-7.1.20 && \
 mkdir /usr/local/php7 && \
 ./configure \ 

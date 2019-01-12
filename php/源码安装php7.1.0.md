@@ -49,7 +49,7 @@ mkdir /usr/local/php7 && \
 --enable-zip && make && make install
 
 // copy php.ini
-# cp /usr/local/src/php-7.1.0/php.ini-production /usr/local/php7/etc/php.ini
+# cp /usr/local/src/php-7.1.20/php.ini-production /usr/local/php7/etc/php.ini
 
 # 非守护进程启动，docker常用
 # /usr/local/php7/sbin/php-fpm -F

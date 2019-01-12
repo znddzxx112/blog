@@ -3,37 +3,19 @@
 
 - 可参考文章：http://www.cleey.com/blog/single/id/857.html
 ```
-# cd /usr/local/src
-# wget http://cn2.php.net/get/php-7.1.0.tar.gz/from/this/mirror
-# mv mirror php-7.1.0.tar.gz
-// curl命令替代上面二步
-# curl -sSL -o php-7.1.20.tar.gz http://cn2.php.net/get/php-7.1.20.tar.gz/from/this/mirror
-# tar -zxvf php-7.1.0.tar.gz 
-# cd php-7.1.0
+# curl -sSL -o /usr/local/src/php-7.1.20.tar.gz http://cn2.php.net/get/php-7.1.20.tar.gz/from/this/mirror && \
+tar -zxvf php-7.1.0.tar.gz && \
+cd php-7.1.0 && \
+mkdir /usr/local/php7 && \
+./configure –prefix=/usr/local/php7 –with-curl –with-freetype-dir –with-gd –with-gettext –with-iconv-dir –with-kerberos –with-libdir=lib64 –with-libxml-dir –with-mysqli –with-openssl –with-pcre-regex –with-pdo-mysql –with-pdo-sqlite –with-pear –with-png-dir –with-xmlrpc –with-xsl –with-zlib –enable-fpm –enable-bcmath –enable-libmxl –enable-inline-optimization –enable-gd-native-ttf –enable-mbregex –enable-mbstring –enable-opcache –enable-pcntl –enable-shmop –enable-soap –enable-sockets –enable-sysvsem –enable-xml –enable-zip && \
+make && make install
 
-# cd /usr/local/src/php7
-
-// 配置
-# mkdir /usr/local/php7
-# ./configure --prefix=/usr/local/php7 -enable-fpm --with-mysqli
-
-// 配置语句2
-./configure –prefix=/usr/local/php7 –with-curl –with-freetype-dir –with-gd –with-gettext –with-iconv-dir –with-kerberos –with-libdir=lib64 –with-libxml-dir –with-mysqli –with-openssl –with-pcre-regex –with-pdo-mysql –with-pdo-sqlite –with-pear –with-png-dir –with-xmlrpc –with-xsl –with-zlib –enable-fpm –enable-bcmath –enable-libmxl –enable-inline-optimization –enable-gd-native-ttf –enable-mbregex –enable-mbstring –enable-opcache –enable-pcntl –enable-shmop –enable-soap –enable-sockets –enable-sysvsem –enable-xml –enable-zip
-
-// 编译与安装
-# make && make install
+// copy php.ini
+# cp /usr/local/src/php-7.1.0/php.ini-production /usr/local/php7/etc/php.ini
 
 // 配置环境变量
-# vim /etc/profile
-# export PATH=$PATH:/usr/local/php7/bin:/usr/local/php7/sbin
-# source /etc/profile
-
-// php.ini拷贝
-// 使用phpinfo()查看ini路径
-Configuration File (php.ini) Path  // php.ini路径
-Loaded Configuration File  // 载入的配置文件
-// 从源文件拷贝php.ini
-# cp /usr/local/src/php-7.1.0/php.ini-production /usr/local/php7/etc/php.ini
+# echo "export PATH=$PATH:/usr/local/php7/bin:/usr/local/php7/sbin" >> /etc/profile && \
+source /etc/profile
 
 // 测试php7
 # php -v
@@ -55,7 +37,7 @@ group = www
 # /usr/local/php7/sbin/php-fpm
 
 // 立即启动php-fpm
-# /usr/local/php/sbin/php-fpm 
+# /usr/local/php7/sbin/php-fpm 
 
 ```
 #### 参考文章做法

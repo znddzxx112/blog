@@ -28,3 +28,14 @@ fastcgi_param  SERVER_NAME        $server_name; #服务器名，域名在server{
   
 在php可打印出上面的服务环境变量  
 如：echo $_SERVER['REMOTE_ADDR'] 
+
+- ngx_http_fastcgi_module
+```
+指令：
+fastcgi_index 设置fastcgi优先读取文件名称
+fastcgi_param 设置fastcgi变量
+fastcgi_cache fastcgi缓存
+fastcgi_temp_path 存储来自fastcgi的缓存文件目录
+变量：
+$fastcgi_script_name 等于指令fastcgi_index的值
+```

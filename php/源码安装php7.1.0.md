@@ -3,7 +3,7 @@
 
 - 可参考文章：http://www.cleey.com/blog/single/id/857.html
 ```
-# yum -y install make gcc gcc-c++ libmcrypt libmcrypt-devel libjpeg libjpeg-devel libpng curl-devel libxslt-devel libpng-devel freetype freetype-devel libxml2 libxml2-devel pcre-devel
+# yum -y install make gcc gcc-c++ pcre openssl openssl-devel zlib unzip cmake ncurses-devel libmcrypt libmcrypt-devel libjpeg libjpeg-devel libpng curl-devel libxslt-devel libpng-devel freetype freetype-devel libxml2 libxml2-devel pcre-devel
 
 # curl -sSL -o /usr/local/src/php-7.1.20.tar.gz http://cn2.php.net/get/php-7.1.20.tar.gz/from/this/mirror && \
 groupadd fpm && useradd fpm -s /sbin/nologin -g fpm -M && \

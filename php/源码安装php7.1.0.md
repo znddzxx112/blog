@@ -43,8 +43,7 @@ mkdir /usr/local/php7 && \
 –enable-sockets \
 –enable-sysvsem \
 –enable-xml \
-–enable-zip &&
-make && make install
+–enable-zip && make && make install
 
 // copy php.ini
 # cp /usr/local/src/php-7.1.0/php.ini-production /usr/local/php7/etc/php.ini

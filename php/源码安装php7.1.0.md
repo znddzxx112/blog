@@ -50,8 +50,10 @@ mkdir /usr/local/php7 && \
 
 // copy php.ini
 # cp /usr/local/src/php-7.1.20/php.ini-production /usr/local/php7/etc/php.ini
-// copy php.conf
+// copy php-fpm.conf
 # cp /usr/local/php7/etc/php-fpm.conf.default /usr/local/php7/etc/php-fpm.conf
+// copy www.conf
+# cp /usr/local/php7/etc/php-fpm.d/www.conf.default /usr/local/php7/etc/php-fpm.d/www.conf
 
 # 非守护进程启动，docker常用
 # /usr/local/php7/sbin/php-fpm -F

@@ -9,9 +9,9 @@
 tar -zxvf /usr/local/src/php-7.1.20.tar.gz -C /usr/local/src/ && \
 cd /usr/local/src/php-7.1.20 && \
 mkdir /usr/local/php7 && \
-./configure \ 
--prefix=/usr/local/php7 \ 
--with-curl \ 
+./configure \
+-prefix=/usr/local/php7 \
+-with-curl \
 -with-freetype-dir \
 -with-gd \
 -with-gettext \

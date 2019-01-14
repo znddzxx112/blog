@@ -35,5 +35,5 @@ location ^~ /foo/ {
 
 - 变量解释
 ```
-log_format 'client address: $remote_addr - client port: $remote_port - method:$request_method - host:$host - port:$server_port - request: $request - uri:$uri - request_uri:$request_uri - args:$args - document_root:$document_root,remenber http_, arg_, cookie_ ' echoRequest
+log_format 'client address: $remote_addr - client port: $remote_port - method:$request_method - host:$host - port:$server_port - request: $request - request_filename:$request_filename - uri:$uri - request_uri:$request_uri - args:$args - document_root:$document_root,remenber http_, arg_, cookie_ ' dumpRequest
 ```

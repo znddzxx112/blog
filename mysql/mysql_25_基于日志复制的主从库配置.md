@@ -1,3 +1,4 @@
+- 参考文章：https://blog.csdn.net/mycwq/article/details/17136001
 ```
 create user 'repl'@'192.168.0.%' identified by 'Caxxx@123';
 grant REPLICATION SLAVE ON *.* TO 'repl'@'192.168.0.%';

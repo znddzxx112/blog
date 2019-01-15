@@ -1,3 +1,7 @@
+### mysql5.7中文手册
+
+* http://www.searchdoc.cn/rdbms/mysql/dev.mysql.com/doc/refman/5.7/en/index.com.coder114.cn.html
+
 ### mysql版本历史
 
 参考书籍 《深入浅出mysql》

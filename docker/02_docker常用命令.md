@@ -51,3 +51,29 @@ $ sudo docker build -t [name] .
 docker [info|version]
 ### 变迁图
 ![](https://sfault-image.b0.upaiyun.com/404/256/404256463-545a1d114c535_articlex)
+
+- docker
+```
+image:
+docker tag sorurce:tag targert:tag
+docker images
+docker rmi images_name
+docker build . -t image_name
+docker run -d/-it -p -v --privired image_name --name
+docker pull xxx.com/xxx/xxx:tag
+docker push xxx/xxx:latest
+
+cotainers:
+docker ps -a
+docker ps
+docker rm -f contain_name
+docker stop
+docker start
+docker restart
+docker top container_name
+docker commit container_name image_name:tag
+
+repority:
+docker login
+docker logout
+```

@@ -1,6 +1,7 @@
 - merge origin fork project
 ```
-git remote add fork https://github.com/xxx.git
+// 拉取从原项目中拉取，推往fork项目中推
+git remote add fork git@github.com/znddzxx112/xxx.git
 git fetch fork
-git merge fork/master
+git push fork master
 ```

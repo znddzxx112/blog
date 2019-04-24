@@ -133,6 +133,9 @@ func (pool *objectpool) Close() {
 
 	pool.isclose = true
 	close(pool.objectchan)
+	for obj := range pool.objectchan {
+		pool.opts.objClose(obj)
+	}
 	pool.stat = nil
 	pool.opts = nil
 }

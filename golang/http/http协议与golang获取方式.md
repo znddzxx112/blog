@@ -54,6 +54,20 @@ Content-Type: text/plain; charset=utf-8
 	req.AddCookie(cok)
 获取Cookie参数:
   req.Cookie("cfoo")
+
+设置Post参数,表单提交:
+	values := url2.Values{}
+	values.Add("foo", "bar")
+	url := fmt.Sprintf(
+		"%s://%s/posthello",
+		"http", net.JoinHostPort("127.0.0.1", "8890"))
+	req,_ := http.NewRequest("POST", url, strings.NewReader(values.Encode()))
+	req.Header.Set(http.CanonicalHeaderKey("Content-Type"), "application/x-www-form-urlencoded")
+获取Post参数:
+	f req.ParseForm() == nil {
+		log.Println(req.PostFormValue("foo"))
+	}
+
 ```
 
 - 获取Response

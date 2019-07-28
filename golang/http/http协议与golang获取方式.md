@@ -1,22 +1,28 @@
 - http请求 - Request
 ```
-GET /gethello?foo=bar&foo2=bar2 HTTP/1.1
+GET /gethello?foo=bar&foo2=bar2 HTTP/1.1  ===> Request.Method Request.URL Request.Proto Request.Major Request.Minor
+
 Host: 127.0.0.1:8889
 User-Agent: Go-http-client/1.1
-Cookie: cfoo=cbar
+Cookie: cfoo=cbar ==========> Request.AddCookie()
 Accept-Encoding: gzip
-
+ ==================> Request.Header
+ 
+ Request.ContentLength
+ Request.Body
+ ==============>
 ```
 
 - http响应 -Response
 ```
-HTTP/1.1 200 OK
-Set-Cookie: wfoo=wbar; HttpOnly; Secure
+HTTP/1.1 200 OK    =============> Response.Proto Response.Major Response.Minor Response.Status Response.StatusCode
+Set-Cookie: wfoo=wbar; HttpOnly; Secure  =======> http.SetCookie()
 Date: Sun, 28 Jul 2019 10:23:34 GMT
-Content-Length: 32
+Content-Length: 32  ========> Response.ContentLength
 Content-Type: text/plain; charset=utf-8
-
+ ====================> Response.Header 
 127.0.0.1:8889Go-http-client/1.1
+=====================>Response.Body
 ```
 
 - 获取Request

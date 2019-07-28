@@ -67,7 +67,29 @@ Content-Type: text/plain; charset=utf-8
 	f req.ParseForm() == nil {
 		log.Println(req.PostFormValue("foo"))
 	}
+设置Post参数,json提交:
+	type Hellojson struct {
+		Id int64 `json:id`
+		Name string `json:name`
+	}
+	hello := Hellojson{Id:12,Name:"baike"}
+	MarshalStr, _ := json.Marshal(hello)
 
+	req,_ := http.NewRequest("POST", url, bytes.NewReader(MarshalStr))
+	req.Header.Set(http.CanonicalHeaderKey("Content-Type"), "application/json")
+获取Post参数:
+	var buflen int64 = 4096
+	if req.ContentLength > 0 {
+		buflen = req.ContentLength
+	}
+	buf := make([]byte, buflen)
+	io.ReadFull(req.Body, buf)
+	hellojson := &Hellojson{}
+	var UnmarshalErr error
+	if UnmarshalErr = json.Unmarshal(buf, hellojson);UnmarshalErr != nil {
+		io.WriteString(w, "error")
+		return
+	}
 ```
 
 - 获取Response

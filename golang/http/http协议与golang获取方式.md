@@ -32,6 +32,13 @@ Content-Type: text/plain; charset=utf-8
   if req.ParseForm() == nil {
 		req.FormValue("foo")
 	}
+设置Header参数:
+	header := http.Header{}
+	header.Add("VH", "0_62")
+	req,_ := http.NewRequest("GET",url, nil)
+	req.Header = header
+获取Header参数:
+	req.Header.Get("VH")
 设置Cookie参数:
   cok := &http.Cookie{
 		Name : "cfoo",

@@ -6,11 +6,11 @@ db.feed.getIndexes();
 ```
 > 创建稀疏索引：
 ```
-db.feedlive.createIndex({userid:1},{_id:-1});
+db.feedlive.createIndex({userid:1},{spare:true});
 ```
 > 创建组合索引：
 ```
-db.feedlive.createIndex({userid:1,_id:-1});
+db.feedlive.createIndex({userid:1,_id:-1}, {background: true});
 ```
 > 创建唯一索引:
 ```

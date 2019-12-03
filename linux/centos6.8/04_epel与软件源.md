@@ -19,5 +19,7 @@ centos7安装各种软件推荐https://pkgs.org/进行查找
 epel 以下三个软件量大而且软件新：CentOS SCLo RH(有新版本软件)、EPEL（往往没有新版本软件）、Les RPM de Remi
 
 yum repolist 查看在用软件源
+
+这种软件源保留着一个数据库保存着每个软件的依赖
 ```
 

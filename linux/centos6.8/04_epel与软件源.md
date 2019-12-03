@@ -12,3 +12,12 @@
 3、运行 
 # yum makecache // 生成缓存
 ```
+
+### 使用其他的epel（第三方软件仓库）
+```
+centos7安装各种软件推荐https://pkgs.org/进行查找
+epel 以下三个软件量大而且软件新：CentOS SCLo RH(有新版本软件)、EPEL（往往没有新版本软件）、Les RPM de Remi
+
+yum repolist 查看在用软件源
+```
+

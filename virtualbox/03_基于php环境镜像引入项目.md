@@ -69,21 +69,34 @@ $ composer config -g --unset repos.packagist
 
 > 需要先安装protobuf：https://github.com/protocolbuffers/protobuf/blob/master/src/README.md
 >
-> grpc
->
-> 再安装php扩展
+> - protoc编译工具
+> - protobuf c扩展
+> - gRPC命令行工具（grpc_php_plugin）
+> - grpc c扩展
+> - grpc php库
+
+参考文章：
+
+> https://blog.csdn.net/weixin_39986952/article/details/81168633
 
 ```
+// zlib install
+# sudo apt-get install zlib1g-dev
+// grpc 
+# git clone -b v1.27.0 https://gitee.com/mirrors/grpc-framework grpc
+# cd grpc
+# git submodule update --init  #更新第三方源码
+
 // protobuf
 # wget https://github.com/protocolbuffers/protobuf/archive/v3.11.4.tar.gz
 # apt-get install autoconf automake libtool curl make g++ unzip
 # ./autogen.sh
- #./configure
- #    make
- #    make check
- #    sudo make install
- #    sudo ldconfig # refresh shared library cache.
- // grpc
+#./configure
+# make
+# make check
+# sudo make install
+# sudo ldconfig # refresh shared library cache.
+// grpc
 # wget https://github.com/grpc/grpc/archive/v1.12.0.tar.gz
 # tar -zxvf v1.12.0.tar.gz
 # cd grpc
@@ -92,6 +105,8 @@ $ composer config -g --unset repos.packagist
 
 # cd ext/php/
 # 
+// https://pecl.php.net/package/gRPC
+# wget https://pecl.php.net/get/grpc-1.27.0.tgz
 ```
 
 

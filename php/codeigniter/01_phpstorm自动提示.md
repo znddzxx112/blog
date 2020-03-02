@@ -34,8 +34,6 @@ core/Controller.php,core/Model.php,database/DB_query_builder.php
 >
 > @property UserService $UserService
 
-这类注释我目前我写在feature_vip分支中README.md,后期会合并至master分支中
-
 - 打开文件app/core/MY_Service.php文件添加同样注释
 
 ##### 结语

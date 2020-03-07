@@ -70,14 +70,33 @@ $ composer config -g --unset repos.packagist
 > 需要先安装protobuf：https://github.com/protocolbuffers/protobuf/blob/master/src/README.md
 >
 > - protoc编译工具
-> - protobuf c扩展
+> - protobuf c扩展 【可以使用composer protobuf替代】
 > - gRPC命令行工具（grpc_php_plugin）
 > - grpc c扩展
-> - grpc php库
+> - grpc php库【protoc生成的php代码】
 
 参考文章：
 
 > https://blog.csdn.net/weixin_39986952/article/details/81168633
+>
+> https://github.com/grpc/grpc/blob/master/BUILDING.md
+>
+> 
+>
+> 直接使用apt install protobuf-compiler-grpc搞定
+>
+> 在https://pecl.php.net/package/gRPC/1.27.0下载tgz文件
+>
+> pecl install grpc-1.28.0RC1.tgz
+>
+> 并在php.ini中写入 extension=grpc.so
+>
+> 在composer.json中写入
+>
+> ```
+> "grpc/grpc": "v1.12.0",
+> "google/protobuf": "^v3.3.0",
+> ```
 
 ```
 // zlib install

@@ -16,7 +16,8 @@
 > 发给其他机器并解压
 
 ```bash
-# scp 112@xxx:/tmp/gitlab.tar.gz /tmp
+# scp /tmp/gitlab.tar.gz gitlab 112@xxx:/tmp/gitlab.tar.gz
+# mkdir /srv
 # tar -zxvf /tmp/gitlab.tar.gz -C /srv/
 ```
 
@@ -37,7 +38,7 @@ docker run -d --name gitlab \
 	--volume /srv/gitlab/config:/etc/gitlab:Z \
     --volume /srv/gitlab/logs:/var/log/gitlab:Z \
     --volume /srv/gitlab/data:/var/opt/gitlab:Z \
-	/gitlab/gitlab-ce:latest
+	gitlab/gitlab-ce:latest
 ```
 
 > 解释下
@@ -61,11 +62,11 @@ docker run -d --name gitlab \
 修改/etc/gitlab/gitlab.rb,在文件末尾追加：
 
 ```
-external_url 'http://192.168.1.104:8090'
+external_url 'http://gitlab.localhost.com:8090'
 gitlab_rails['gitlab_shell_ssh_port'] = 8022
 ```
 
-> external_url 'http://192.168.1.114:8090' 为宿主机ip，后期访问路径
+> external_url 'http://gitlab.localhost.com:8090' 为宿主机ip，后期访问路径
 >
 > gitlab_rails['gitlab_shell_ssh_port'] = 8022 为ssh push时使用
 
@@ -88,6 +89,10 @@ gitlab_rails['gitlab_shell_ssh_port'] = 8022
 
 ### 访问gitlab
 
-http://192.168.1.104:8090/
+修改本机器/etc/hosts文件,增加规则
+
+> 192.168.1.108 gitlab.localhost.com
+
+浏览器访问http://gitlab.localhost.com:8090/
 
 输入root用户密码

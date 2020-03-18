@@ -9,25 +9,67 @@
 
 #### 标准命令
 
-- go build
+##### go build
 
-  > 编译源码文件以及依赖包.源码文件:分为命令源码文件、库源码文件
-  >
-  > build命令源码文件，结果生成可执行文件，-o标记参数 命名可执行文件名称
-  >
-  > build库源码文件，生成.a后缀的库文件
-  >
-  > golang二个编译器 1.gc golang自带编译器 2.gccgo gcc提供的golang编译器
-  >
-  > -v 标记参数打印被编译的代码包名字
-  >
-  > -gcflags标记参数: 将参数传给gc自带编译器。即 go tool compile
-  >
-  > -ldflags标记参数: 将参数传给连接器。即go tool link
+> 编译源码文件以及依赖包.源码文件:分为命令源码文件、库源码文件
+>
+> build命令源码文件，结果生成可执行文件，-o标记参数 命名可执行文件名称
+>
+> build库源码文件，生成.a后缀的库文件
+>
+> golang二个编译器 1.gc golang自带编译器 2.gccgo gcc提供的golang编译器
+>
+> -v 标记参数打印被编译的代码包名字
+>
+> -gcflags标记参数: 将参数传给gc自带编译器。即 go tool compile
+>
+> -ldflags标记参数: 将参数传给连接器。即go tool link
 
-- go install
+```bash
+$ go build -work -v
+WORK=/tmp/go-build253900926
+github.com/google/gops/signal
+github.com/go-playground/locales/currency
+github.com/tidwall/match
+sipc_vip_backend_go/gateway/common
+golang.org/x/sys/unix
+github.com/urfave/cli
+github.com/dgrijalva/jwt-go
+github.com/dchest/captcha
+```
 
-  > 编译命令源码文件，并将结果放到$GOBIN目录下，如果$GOBIN未被设置值则会报错
+> -work 编译目录
+>
+> -v 打印依赖的包名称
+
+**交叉编译**
+
+> ```bash
+> $ CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build ``test``.go
+> $ CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build ``test``.go
+> ```
+
+##### go install
+
+> 编译命令源码文件，会将命令放到$GOBIN目录下，如果$GOBIN未被设置值则会报错
+>
+> 标准包的库源码文件放在$GOPATH/pkg下
+
+##### go mod
+
+环境变量**GO111MODULE**
+
+> GO111MODULE=off   // 不用module功能，GOPATH模式寻找依赖包
+> GO111MODULE=on   // module模式，build时找module下的vendor，GOPATH承担下载依赖包到GOPATH/pkg/mod
+> GO111MODULE=auto  // 根据当前目录是否包含go.mod来判断
+
+> go mod download       // 下载依赖到本地缓存，查看GOCACHE缓存地址
+> go mod graph          //把模块之间的依赖图显示出来
+> go mod init [模块名]      // 当前目录初始化和创建`go.mod`文件,最好是项目名
+> go mod tidy -v          // 添加确实模块和移除不必要的模块
+> go mod vendor -v       // 当前目录下生产vendor目录，包含所有依赖包
+> go mod verify          // 检查当前模块的依赖是否已经存储在本地下载的源代码缓存中
+> go build -mod=vendor   // 依赖module下的vendor生成可执行文件
 
 #### 入门资料
 

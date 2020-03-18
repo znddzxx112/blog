@@ -1,5 +1,17 @@
 [TOC]
 
+#### nvm安装多版本nodejs
+
+> nvm 的全称是 **Node Version Manager**
+>
+> Node.js 的各种特性都没有稳定下来，所以我们经常由于老项目或尝新的原因，需要切换各种版本
+
+```bash
+$  nvm install 0.12
+$  nvm ls
+$ nvm use 0.12
+```
+
 
 
 #### nodejs下载和安装
@@ -61,6 +73,88 @@ nodejs暴露给开发者的接口则是native modules，当我们发起请求时
 - 1，2，3将监听注册到libuv中，4，5，6将回调送回callback函数处
 
 - nodejs将v8、libuv有机结合在一起
+
+#### 包依赖管理
+
+package.json
+
+> ```bash
+> {
+>   "name": "wallet-backend",
+>   "version": "1.0.0",
+>   "description": "",
+>   "main": "server.js",
+>   "scripts": {
+>     "test": "node test.js",
+>     "start": "node server.js",
+>     "postinstall": "node ./lib/cmd.js"
+>   },
+>   "author": "morolt@gmail.com",
+>   "license": "ISC",
+>   "dependencies": {
+>     "abi-decoder": "^1.1.0",
+>     "amqplib": "^0.5.5",
+>     "apn": "^2.2.0",
+>     "bignumber.js": "^7.2.1",
+>     "body-parser": "latest",
+>     "ethereum-input-data-decoder": "latest",
+>     "ethereumjs-tx": "^1.3.4",
+>     "finalhandler": "^1.1.1",
+>     "log4js": "^2.5.3",
+>     "log4js-extend": "^0.2.1",
+>     "md5": "^2.2.1",
+>     "mysql": "^2.17.1",
+>     "mysql2": "^2.1.0",
+>     "node-cmd": "latest",
+>     "node-schedule": "^1.3.2",
+>     "protobufjs": "^3.8.2",
+>     "request": "^2.88.0",
+>     "router": "^1.3.2",
+>     "scheduler": "0.14.0",
+>     "sequelize": "^4.38.0",
+>     "solc": "^0.4.23",
+>     "squel": "^5.12.1",
+>     "web3": "^1.0.0-beta.33"
+>   }
+> }
+> ```
+
+- yarn方式
+
+```bash
+$ npm install yarn -g
+$ yarn 下载依赖
+```
+
+- npm
+
+```bash
+$ npm install express utility --save
+```
+
+> --save 安装express utility同时写入package.json中的`dependencies`
+
+
+
+
+
+#### 并发模型
+
+
+
+##### 多个协程或者多个异步操作
+
+- 设置计数器或者golang中waitgrop包
+
+  > 等待所有操作完成
+
+##### 使用 async 控制并发
+
+
+
+##### 使用promise控制并发
+
+> promise链提供了一种让函数顺序执行的方法
 
 #### 问题
 

@@ -16,6 +16,8 @@
 
 前提安装golang,C compilers 
 
+- 方式1：源码安装
+
 ```bash
 $ git clone https://github.com/ethereum/go-ethereum
 $ sudo apt-get install -y build-essential
@@ -23,9 +25,7 @@ $ cd go-ethereum
 $ make geth
 ```
 
-- 方式2
-
-ubuntu ppa
+- 方式2：ubuntu ppa
 
 > https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum
 
@@ -73,63 +73,40 @@ $ sudo apt-get install ethereum
 
 #### 运行geth
 
-##### 运行一个轻节点
-
-满足“创建账户”，“转账”，“部署合约与合约交互”三个场景，不涉及历史数据
+##### 运行主网节点
 
 ```bash
-$ geth console
+$ geth 
 ```
 
-本质是 `--syncmode` 同步模式不同
+ `--syncmode` 参数的同步模式不同，可以运行全节点，归档节点和轻节点
 
-节点运行起来之后，可以用web3.js和自带客户端进行交互
+> 轻节点满足“创建账户”，“转账”，“部署合约与合约交互”三个场景，不涉及历史数据
 
-##### 在测试网络运行节点,需要挖矿
+##### 测试网络运行节点
 
 ```bash
-$ geth --testnet console
+$ geth --testnet 
 ```
 
-测试网络数据存储于~/.ethereum/testnet
+##### 本地开发网络
 
-```bash
-$ geth attach <datadir>/testnet/geth.ipc
+```
+$ geth --dev 
 ```
 
-使用上述方式与测试网络交互
-
-##### 运行一个信任证明的测试网络，不需要挖矿
-
-```bash
-$ mkdir -p ~/data/eth-test
-$ geth --dev --dev.period 14 --datadir data/eth-test 
-$ geth --datadir ~/data/eth-test attach
-```
-
-> geth attach提供的方式，控制台文档
->
-> https://github.com/ethereum/wiki/wiki/JavaScript-API
+`--datadir` 参数可以选择数据保存位置
 
 ##### 用docker运行节点
 
 > https://github.com/ethereum/go-ethereum#docker-quick-start
 
-#### 编程方式与`geth`节点交互
+#### 编程语言与`geth`节点交互
 
 > 作为开发者，不满足通过geth attach提供的方式与geth交互。
 >
-> 有以下文档关于json-rpc,各种语言实现以下即可通信,
->
-> https://github.com/ethereum/wiki/wiki/JSON-RPC（nodejs的web3.js包已实现）
->
-> json-rpc只是编码方式，通信协议以下http,websock,ipc皆可
 
-这份文档的作用-未知
-
-> https://github.com/ethereum/go-ethereum/wiki/Management-APIs
-
-##### geth要支持json-rpc的相关参数
+##### geth中json-rpc相关参数
 
 - `--rpc` Enable the HTTP-RPC server
 - `--rpcaddr` HTTP-RPC server listening interface (default: `localhost`)
@@ -145,6 +122,59 @@ $ geth --datadir ~/data/eth-test attach
 - `--ipcapi` API's offered over the IPC-RPC interface (default: `admin,debug,eth,miner,net,personal,shh,txpool,web3`)
 - `--ipcpath` Filename for IPC socket/pipe within the datadir (explicit paths escape it)
 
+geth有几种api，`admin,debug,eth,miner,net,personal,shh,txpool,web3`
+
+通过`--rpcapi` `--ipcapi`  `--wsapi`  限定http,ipc,ws允许使用哪些api
+
+`admin,debug,miner,persion,txpool`的文档在下方
+
+> https://github.com/ethereum/go-ethereum/wiki/Management-APIs
+
+`eth,web3`的文档在下方
+
+> https://github.com/ethereum/wiki/wiki/JavaScript-API
+
+各种语言实现如下json-rpc规范文档，即可与geth通信
+
+json-rpc是协议规范，通信方式可选http,websock,ipc皆可
+
+> https://github.com/ethereum/wiki/wiki/JSON-RPC
+
+nodejs已经实现json-rpc，库名称web3.js文档
+
+> https://web3js.readthedocs.io/en/v1.2.6/web3-eth.html
+
 #### 部署私有网络（再造一个 以太坊）
 
 > https://github.com/ethereum/go-ethereum#operating-a-private-network
+
+#### 本地开发环境搭建
+
+```bash
+$ mkdir -p ~/data/eth-test
+$ geth --dev --dev.period 0 --datadir ~/data/eth-test --rpc --rpcaddr=localhost --rpcport 8545
+```
+
+> --dev.period 出块周期 0:代表交易发生时才出块
+>
+> --dev 允许挖矿
+>
+> --rpc 启用rpc,http-rpc
+>
+> --rpcaddr 地址
+>
+> --rpcport 端口
+>
+> --syncmode=fast
+
+连接控制台
+
+```bash
+$ geth --datadir ~/data/eth-test attach
+// 或者
+$ geth attach ~/data/eth-test/geth.ipc
+```
+
+控制台文档
+
+> https://github.com/ethereum/wiki/wiki/JavaScript-API

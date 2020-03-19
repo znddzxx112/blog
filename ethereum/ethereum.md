@@ -97,7 +97,11 @@ $ geth --dev
 
 `--datadir` 参数可以选择数据保存位置
 
-##### 用docker运行节点
+##### 部署私有网络（再造一个 以太坊）
+
+> https://github.com/ethereum/go-ethereum#operating-a-private-network
+
+##### docker方式运行节点
 
 > https://github.com/ethereum/go-ethereum#docker-quick-start
 
@@ -106,7 +110,7 @@ $ geth --dev
 > 作为开发者，不满足通过geth attach提供的方式与geth交互。
 >
 
-##### geth中json-rpc相关参数
+##### geth中与json-rpc相关参数
 
 - `--rpc` Enable the HTTP-RPC server
 - `--rpcaddr` HTTP-RPC server listening interface (default: `localhost`)
@@ -130,11 +134,19 @@ geth有几种api，`admin,debug,eth,miner,net,personal,shh,txpool,web3`
 
 > https://github.com/ethereum/go-ethereum/wiki/Management-APIs
 
-`eth,web3`的文档在下方
+`eth`的文档在下方
 
 > https://github.com/ethereum/wiki/wiki/JavaScript-API
+>
+> 另外 eth = web3.eth
+>
+> personal =web3.personal
 
-各种语言实现如下json-rpc规范文档，即可与geth通信
+在控制台输入`web3`能看到所有的接口名称
+
+##### 各种语言与geth通信
+
+实现如下json-rpc规范文档，即可
 
 json-rpc是协议规范，通信方式可选http,websock,ipc皆可
 
@@ -143,10 +155,6 @@ json-rpc是协议规范，通信方式可选http,websock,ipc皆可
 nodejs已经实现json-rpc，库名称web3.js文档
 
 > https://web3js.readthedocs.io/en/v1.2.6/web3-eth.html
-
-#### 部署私有网络（再造一个 以太坊）
-
-> https://github.com/ethereum/go-ethereum#operating-a-private-network
 
 #### 本地开发环境搭建
 
@@ -175,6 +183,151 @@ $ geth --datadir ~/data/eth-test attach
 $ geth attach ~/data/eth-test/geth.ipc
 ```
 
-控制台文档
 
-> https://github.com/ethereum/wiki/wiki/JavaScript-API
+
+#### nodejs的web3.js库实现关键技术
+
+##### 创建离线钱包
+
+> 目的存储keystore文件在手机上
+
+```js
+ // 本地生成公私钥还可以使用这个库https://github.com/ethereumjs/ethereumjs-wallet
+let account = await web3.eth.accounts.create();
+            let keystore = await web3.eth.accounts.encrypt(account.privateKey, password);
+```
+
+> web3.eth.accounts.create() 返回地址和私钥
+>
+> web3.eth.accounts.encrypt() 将私钥和密码生成keystore文件
+
+```json
+密码：123456
+{
+        "version": 3,
+        "id": "7c521bea-827d-413c-91b1-1cdb8a5e57a6",
+        "address": "90d983cff6bc0072194f67f9cbd7c45826c62011",
+        "crypto": {
+            "ciphertext": "ce576899804ac3c31d2c10fcc87f7a282cb5e4a150944eb780e4959485e5a78f",
+            "cipherparams": {
+                "iv": "423f0c1a32bccdfcf77633f3eea84ce5"
+            },
+            "cipher": "aes-128-ctr",
+            "kdf": "scrypt",
+            "kdfparams": {
+                "dklen": 32,
+                "salt": "b8e26c73923acd513b4ad05af9272c13f5a5b4f0c5f8b0b7dee7e890c3730b60",
+                "n": 8192,
+                "r": 8,
+                "p": 1
+            },
+            "mac": "b370ff778d0f2f72964e0492537465785e9bff7e05518be985d0f5b437520bd4"
+        }
+    }
+```
+
+##### 通过keystore导入钱包
+
+> 目的得到address验证密码是否正确，并把keystore存储
+
+```js
+let account = web3.eth.accounts.decrypt(keystore, password)
+console.log(account.address, account.privateKey)
+```
+
+##### 通过私钥导入钱包
+
+> 目的通过私钥和密码，生成keystore文件
+
+```js
+ let privateKey = req.body.privateKey;
+            let password = req.body.password;
+            let keystore = await web3.eth.accounts.encrypt(privateKey, password);
+```
+
+> web3.eth.accounts.encrypt(privateKey, password);
+
+结果
+
+```json
+ {
+        "version": 3,
+        "id": "801ad3f4-e493-4747-ba7c-92389c1769ba",
+        "address": "90d983cff6bc0072194f67f9cbd7c45826c62011",
+        "crypto": {
+            "ciphertext": "0b31a036da5baec500d62465671f6d69350bb9de6405c16dae1534b58961efc1",
+            "cipherparams": {
+                "iv": "3c94f62b76a9feea23e3cd3d5212973c"
+            },
+            "cipher": "aes-128-ctr",
+            "kdf": "scrypt",
+            "kdfparams": {
+                "dklen": 32,
+                "salt": "dc071388d04bc907402cec1559bc302c8b7c5b3c7f217ce12b39f98505960d9e",
+                "n": 8192,
+                "r": 8,
+                "p": 1
+            },
+            "mac": "994a32195635a5901313e4efcabebbdfd88e78df204701358a2cd0bef42058e8"
+        }
+    }
+```
+
+##### 通过助记词导入钱包和导出钱包
+
+> BIP39钱包助记词规范，可以找相应实现的库，比如下方
+>
+> https://github.com/ConsenSys/eth-lightwallet
+
+
+
+##### keystore形式和私钥形式导出钱包
+
+> web3.eth.accounts.decryp()验证通过，就可以将keystore内容展示出来,或者 私钥展示出来
+
+```js
+account = lweb3.eth.accounts.decryp({
+                "version": 3,
+                "id": "7c521bea-827d-413c-91b1-1cdb8a5e57a6",
+                "address": "90d983cff6bc0072194f67f9cbd7c45826c62011",
+                "crypto": {
+                    "ciphertext": "ce576899804ac3c31d2c10fcc87f7a282cb5e4a150944eb780e4959485e5a78f",
+                    "cipherparams": {
+                        "iv": "423f0c1a32bccdfcf77633f3eea84ce5"
+                    },
+                    "cipher": "aes-128-ctr",
+                    "kdf": "scrypt",
+                    "kdfparams": {
+                        "dklen": 32,
+                        "salt": "b8e26c73923acd513b4ad05af9272c13f5a5b4f0c5f8b0b7dee7e890c3730b60",
+                        "n": 8192,
+                        "r": 8,
+                        "p": 1
+                    },
+                    "mac": "b370ff778d0f2f72964e0492537465785e9bff7e05518be985d0f5b437520bd4"
+                }
+            }, "123456")
+```
+
+##### 修改keystore密码
+
+> 先用旧密码解锁keystore,并得到私钥
+>
+> 然后用私钥和新密码得到新的keystore文件，并存储
+
+```bash
+oldaccount = await lweb3.eth.accounts.decrypt(keystorev3 json,oldpassword)
+// 返回新的keystore文件
+lweb3.eth.accounts.encrypt(oldaccount.privateKey, newPassword)
+```
+
+
+
+
+
+
+
+#### geth的文件夹keystore下的文件与私钥关系
+
+> https://www.cnblogs.com/tinyxiong/p/9927300.html
+

@@ -275,9 +275,9 @@ console.log(account.address, account.privateKey)
 
 ##### 通过助记词导入钱包和导出钱包
 
-> BIP39钱包助记词规范，可以找相应实现的库，比如下方
+> BIP39钱包助记词规范，可以找相应实现的各个语言的库
 >
-> https://github.com/ConsenSys/eth-lightwallet
+> https://www.jianshu.com/p/d5bac6d36dc6
 
 
 
@@ -323,19 +323,59 @@ lweb3.eth.accounts.encrypt(oldaccount.privateKey, newPassword)
 
 ##### 转账
 
-> 带有密码的账号，都是处于locked状态
+> 离线钱包考虑安全性的做法
 >
-> 所以转账前先要unlock操作，在解锁时长之内才可进行资金划转
+> 先从keystore中获得私钥，lweb3.eth.accounts.decrypt()
+>
+> 生成交易var tx = new Tx(rawTx)
+>
+> 私钥对交易签名 tx.sign(privateKey);
+>
+> 再将签名后的数据发给eth节点 web3.eth.sendSignedTransaction()
 
+```js
+// 交易hash
+            let account = await lweb3.eth.accounts.decrypt('{"address":"20f62c75e39a932f9bb1e27ad5a3f75b5ddf72a4","crypto":{"cipher":"aes-128-ctr","ciphertext":"72b2629b34fe0a89ac9dfe88b43711da8a6e5ccc83eac613df4b80ab60769b22","cipherparams":{"iv":"e79117112697b890392cd0116bf53b3e"},"kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"p":1,"r":8,"salt":"cee93931ce35872a50b6d35c47ca2bd8ada2019d1205af39461c892952a74d7e"},"mac":"71965f35e54c6493d38639b6ddea4f55f00ebfe8b65f7005c23d691bb73d80f7"},"id":"840af15c-74a4-4ad0-9e0e-53e2b09a0510","version":3}', password);
+            console.log(account);
+            let privateKey = new Buffer(account.privateKey.slice(2), 'hex')
+            let nonce = await web3.eth.getTransactionCount(account.address);
+            let gasPrice = await web3.eth.getGasPrice();
 
+            let Tx = require('ethereumjs-tx');
+            var rawTx = {
+                from:account.address,
+                nonce: nonce,
+                gasPrice: gasPrice,
+                to: to,
+                value: lweb3.utils.toWei(value, 'ether'),
+                data: '0x00'//转Token代币会用到的一个字段
+            };
+
+            let gas = await web3.eth.estimateGas(rawTx);
+            rawTx.gas = gas;
+
+            var tx = new Tx(rawTx);
+            tx.sign(privateKey);
+            var serializedTx = tx.serialize();
+            
+            web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex')) .then(function(data) {
+                console.log(data);
+            });
+```
 
 ##### 获取地址余额
 
+```js
+web3.eth.getBalance(address, block)
+```
 
+> address 是地址
+>
+> block 默认为latest，也可以是blockNum 比如348
+>
+> 方法含义：到某一个区块时，某一个address的余额是多少
 
 ##### 获取区块信息
-
-
 
 
 
@@ -343,7 +383,19 @@ lweb3.eth.accounts.encrypt(oldaccount.privateKey, newPassword)
 
 
 
-##### 获取地址历史转账记录
+##### 获取一个地址历史转账记录
+
+
+
+##### 私钥签名与公钥验签
+
+> ```
+> web3.eth.accounts.recoverTransaction(rawTransaction);
+> ```
+>
+> ```
+> web3.eth.accounts.signTransaction(tx, privateKey [, callback]);
+> ```
 
 
 
@@ -385,3 +437,5 @@ lweb3.eth.accounts.encrypt(oldaccount.privateKey, newPassword)
 > 这个作者的几篇文章都不错
 >
 > https://www.cnblogs.com/tinyxiong/p/9927300.html
+>
+> 关于keystore介绍的配图来源：https://www.cnblogs.com/405845829qq/p/10103747.html

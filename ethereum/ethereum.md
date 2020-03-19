@@ -321,13 +321,67 @@ oldaccount = await lweb3.eth.accounts.decrypt(keystorev3 json,oldpassword)
 lweb3.eth.accounts.encrypt(oldaccount.privateKey, newPassword)
 ```
 
+##### 转账
+
+> 带有密码的账号，都是处于locked状态
+>
+> 所以转账前先要unlock操作，在解锁时长之内才可进行资金划转
+
+
+
+##### 获取地址余额
+
+
+
+##### 获取区块信息
 
 
 
 
 
+##### 获取单笔转账信息
 
-#### geth的文件夹keystore下的文件与私钥关系
 
+
+##### 获取地址历史转账记录
+
+
+
+
+
+#### keystore文件与私钥关系
+
+> 如果私钥直接进行存储，一旦被盗，数字资产将被洗劫一空
+>
+> keystore文件是将私钥进行再加密后得到，只有同时盗取 keystore 文件和密码才能盗取我们的数字资产，相对安全多了。
+
+> 助记词=密钥=(keystore+密码)
+
+![29ce9ec7823e44198b8a223cb1414b92](/home/znddzxx112/workspace/caokelei/blog/ethereum/29ce9ec7823e44198b8a223cb1414b92.png)
+
+
+
+> 上图解释清楚了keystore生成过程和从keystore中得到私钥过程
+>
+> mac值的作用：mac = sha256( 解密密钥 + **ciphertext** 密文), 在正式解密前就能知道解密密钥正确与否，从而可知passpharse是否正确
+>
+> 解释一下图中的过程：
+>
+> - **Cipher** 是用于加密以太坊私钥的对称加密算法。此处cipher用的是 *aes-128-ctr* 加密模式。
+> - **Cipherparams** 是 *aes-128-ctr* 加密算法需要的参数。在这里，用到的唯一的参数 *iv*，是*aes-128-ctr*加密算法需要的初始化向量。
+> - **Ciphertext** 密文是 *aes-128-ctr* 函数的加密输出。
+>
+> cipher的密钥比较长，同样难记忆，所以才会继续使用【密钥生成函数kdf】
+>
+> - **kdf** 是一个密钥生成函数，根据你的密码计算（或者取回）**解密密钥**。在这里，**kdf** 用的是*scrypt*算法。
+> - **kdfparams** 是*scrypt*函数需要的参数。在这里，简单来说，*dklen、n、r、p* 和 *salt* 是 **kdf** 函数的参数。
+>
+> cipher密钥是kdf函数的输出
+
+
+
+#### 其他作者优秀文章
+
+> 这个作者的几篇文章都不错
+>
 > https://www.cnblogs.com/tinyxiong/p/9927300.html
-

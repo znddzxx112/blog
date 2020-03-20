@@ -187,19 +187,29 @@ $ geth attach ~/data/eth-test/geth.ipc
 
 #### nodejs的web3.js库实现关键技术
 
+> 这里采用web3.js库作为基础
+>
+> lweb3,web3代表含义，库自身与rpc提供的功能更加严格的区分
+
+```js
+const lweb3 = new Web3() 
+const web3= new Web3(new Web3.providers.HttpProvider(config.geth))
+```
+
 ##### 创建离线钱包
 
 > 目的存储keystore文件在手机上
 
 ```js
- // 本地生成公私钥还可以使用这个库https://github.com/ethereumjs/ethereumjs-wallet
-let account = await web3.eth.accounts.create();
+ let account = await lweb3.eth.accounts.create();
             let keystore = await web3.eth.accounts.encrypt(account.privateKey, password);
 ```
 
 > web3.eth.accounts.create() 返回地址和私钥
 >
 > web3.eth.accounts.encrypt() 将私钥和密码生成keystore文件
+>
+> // 本地生成公私钥还可以使用这个库https://github.com/ethereumjs/ethereumjs-wallet
 
 ```json
 密码：123456
@@ -363,6 +373,33 @@ lweb3.eth.accounts.encrypt(oldaccount.privateKey, newPassword)
             });
 ```
 
+推荐以下这种写法
+
+> 先构建好已签名的交易
+>
+> let tx = await web3.eth.accounts.signTransaction(rawTx, account.privateKey)
+>
+> 将
+>
+> web3.eth.sendSignedTransaction(tx.rawTransaction)
+
+```
+let gasPrice = await web3.eth.getGasPrice();
+            var rawTx = {
+                gasPrice: gasPrice,
+                to:"0x20f62c75e39a932f9bb1e27ad5a3f75b5ddf72a4",
+                value:lweb3.utils.toWei("666", 'ether')
+            };
+            let gas = await web3.eth.estimateGas(rawTx);
+            rawTx.gas = gas;
+            let account = await lweb3.eth.accounts.decrypt(keystore, password);
+            let tx = await web3.eth.accounts.signTransaction(rawTx, account.privateKey);
+            console.log(tx.rawTransaction);
+            let hash = await web3.eth.sendSignedTransaction(rawTransaction);
+```
+
+
+
 ##### 获取地址余额
 
 ```js
@@ -375,29 +412,201 @@ web3.eth.getBalance(address, block)
 >
 > 方法含义：到某一个区块时，某一个address的余额是多少
 
-##### 获取区块信息
+##### 获取区块信息【block】
+
+```js
+// 参数根据区块number或者hash，返回区块信息
+web3.eth.getBlock(blockHashOrBlockNumber)
+// 返回一个区块中交易笔数
+web3.eth.getBlockTransactionCount(blockHashOrBlockNumber).then(console.log)
+// 返回一个区块中叔块数量
+web3.eth.getBlockUncleCount(blockHashOrBlockNumber).then(console.log);
+```
+
+##### 获取转账信息【transaction】
+
+```js
+// 参数根据区块number或者hash，返回转账信息
+            let transaction = await web3.eth.getTransactionFromBlock(blockHashOrBlockNumber, indexNumber);
+            // 返回转账信息
+            await web3.eth.getTransaction(transaction.hash).then(console.log);
+            // 返回未处理的转账信息
+            await web3.eth.getPendingTransactions().then(console.log);
+            // 返回收到该笔交易的区块信息
+            await web3.eth.getTransactionReceipt(transaction.hash).then(console.log);
+            
+```
 
 
 
-##### 获取单笔转账信息
+##### 获取一个地址历史转账记录和转账笔数
 
+web3.js没有提供查一个地址的历史转账记录，有以下三种实现方式
 
-
-##### 获取一个地址历史转账记录
-
-
-
-##### 私钥签名与公钥验签
-
-> ```
-> web3.eth.accounts.recoverTransaction(rawTransaction);
-> ```
+> 1. 遍历区块，再遍历区块中的交易，匹配from,to字段
 >
-> ```
-> web3.eth.accounts.signTransaction(tx, privateKey [, callback]);
-> ```
+>    用来实现的方法：
+>
+>    web3.eth.getTransactionFromBlock(blockHashOrBlockNumber, indexNumber);
+>
+> 2. 监听方式，订阅区块链消息。
+>
+>    可以使用的方法:
+>
+>    web3.eth.subscribe('logs', {address:"xx"})
+>
+>    以下二种也可实现
+>
+>    web3.eth.subscribe('pendingTransactions')
+>
+>    web3.eth.subscribe('newBlockHeaders')
+>
+>    这种方式如果rpc出现服务中断，数据会丢失
+>
+> 3. 独立job去遍历区块链，将数据保存在本地数据库中
+>
+> 我个人推荐第3种方式，区块链信息会被多次查询，保存在数据库是个不错的选择
+
+```js
+// 一个地址发起的转账笔数
+            await web3.eth.getTransactionCount(transaction.from).then(console.log);
+```
 
 
+
+##### 一段信息用私钥签名与公钥验签过程
+
+私钥签名过程
+
+> 先从keystore文件+password中获取私钥
+> 
+> 然后私钥签名，得到signature.signature结果
+>
+> lweb3.eth.accounts.sign(message, account.privateKey)
+
+```js
+let account = await lweb3.eth.accounts.decrypt(keystore文件内容, password);
+            let signature = await lweb3.eth.accounts.sign(message, account.privateKey);
+            // signature.signature
+```
+
+公钥验签过程
+
+> 根据signature.signature和message,就可以返回签名私钥对应的地址
+
+```js
+let message = req.body.message;
+            let signature = req.body.signature;
+            // 返回签名私钥对应的地址
+            let address = await lweb3.eth.accounts.recover(message, signature);
+            console.log(address);
+// 最后校对address即可
+```
+
+##### 交易用私钥签名与公钥验签过程
+
+交易用私钥签名过程
+
+```js
+let gasPrice = await web3.eth.getGasPrice();
+            var rawTx = {
+                gasPrice: gasPrice,
+                to:"0x20f62c75e39a932f9bb1e27ad5a3f75b5ddf72a4",
+                value:lweb3.utils.toWei("666", 'ether')
+            };
+            let gas = await web3.eth.estimateGas(rawTx);
+            rawTx.gas = gas;
+            let account = await lweb3.eth.accounts.decrypt(keystore, password);
+            let tx = await web3.eth.accounts.signTransaction(rawTx, account.privateKey);
+            console.log(tx.rawTransaction);
+```
+
+交易公钥验签过程
+
+```js
+ let rawTransaction = req.body.rawTransaction;
+            // 返回签名私钥对应的地址
+            let address = await lweb3.eth.accounts.recoverTransaction(rawTransaction);
+            console.log(address);
+```
+
+##### 转账已签名交易
+
+```js
+let rawTransaction = req.body.rawTransaction;
+
+let transaction= await web3.eth.sendSignedTransaction(rawTransaction);
+// transaction 是transaction对象
+```
+
+##### 订阅区块、转账交易、地址的事件
+
+
+
+
+
+#### geth自带console实现关键技术
+
+
+
+
+
+#### golang实现关键技术
+
+> 这里采用官方golang实现Ethereum协议的代码库
+>
+> https://github.com/ethereum/go-ethereum
+>
+> go-ethereum的文档列表：
+>
+> https://godoc.org/github.com/ethereum/go-ethereum/rpc
+>
+> https://godoc.org/github.com/ethereum/go-ethereum
+>
+> https://pkg.go.dev/github.com/ethereum/go-ethereum?tab=doc
+
+```golang
+package main
+
+import (
+    "fmt"
+    "github.com/ethereum/go-ethereum/rpc"
+)
+
+func main() {
+
+    client, err := rpc.Dial("http://localhost:8545")
+    if err != nil {
+        fmt.Println("rpc.Dial err", err)
+        return
+    }   
+
+    var account[]string
+    err = client.Call(&account, "eth_accounts")
+    var result string
+    //var result hexutil.Big
+    err = client.Call(&result, "eth_getBalance", account[0], "latest")
+    //err = ec.c.CallContext(ctx, &result, "eth_getBalance", account, "latest")
+
+    if err != nil {
+        fmt.Println("client.Call err", err)
+        return
+    }   
+
+    fmt.Printf("account[0]: %s\nbalance[0]: %s\n", account[0], result)
+    //fmt.Printf("accounts: %s\n", account[0])
+}
+```
+
+
+
+
+
+#### block对象结构
+
+
+
+#### transaction对象结构
 
 
 

@@ -539,13 +539,37 @@ let transaction= await web3.eth.sendSignedTransaction(rawTransaction);
 // transaction 是transaction对象
 ```
 
-##### 订阅区块、转账交易、地址的事件
+##### 区块产生、转账交易、地址变动的事件订阅
+
+> web3提供这三种时间监听
+>
+> web3.eth.subscribe('pendingTransactions')
+>
+> web3.eth.subscribe('newBlockHeaders')
+>
+> web3.eth.subscribe('logs')
+
+```
+web3.eth.subscribe('logs', {
+        address: '0x20f62c75e39a932f9bb1e27ad5a3f75b5ddf72a4'
+    }, function(error, result){
+        if (!error)
+            console.log(result);
+    })
+    .on("connected", function(subscriptionId){
+        console.log(subscriptionId);
+    })
+    .on("data", function(log){
+        console.log(log);
+    })
+    .on("changed", function(log){
+        console.log(log);
+    });
+```
 
 
 
-
-
-#### geth自带console实现关键技术
+#### geth自带控制台实现关键技术
 
 
 
@@ -553,52 +577,86 @@ let transaction= await web3.eth.sendSignedTransaction(rawTransaction);
 
 #### golang实现关键技术
 
-> 这里采用官方golang实现Ethereum协议的代码库
+> 采用ethereum官方实现golang的rpc代码库
 >
-> https://github.com/ethereum/go-ethereum
+> https://github.com/ethereum/go-ethereum/rpc
 >
-> go-ethereum的文档列表：
+> rpc文档：
 >
-> https://godoc.org/github.com/ethereum/go-ethereum/rpc
->
-> https://godoc.org/github.com/ethereum/go-ethereum
->
-> https://pkg.go.dev/github.com/ethereum/go-ethereum?tab=doc
+> https://github.com/ethereum/wiki/wiki/JSON-RPC
 
-```golang
-package main
+##### 定义基本EthRpcClient结构
+
+> 这里以http-rpc为例子，在实际项目中定义EthRpcClient结构体，方便在项目中调用
+>
+> 包中go文件规划如下：
+>
+> rpc.go 存放EthRpcClient结构体相关
+>
+> transactions.go 存放转账交易相关
+>
+> blocks.go 存放区块相关
+>
+> accounts.go 存放钱包账户相关
+
+```go
+package ethereum
 
 import (
-    "fmt"
-    "github.com/ethereum/go-ethereum/rpc"
+	"github.com/ethereum/go-ethereum/rpc"
 )
 
-func main() {
+type EthRpcClient struct {
+	client *rpc.Client
+}
 
-    client, err := rpc.Dial("http://localhost:8545")
-    if err != nil {
-        fmt.Println("rpc.Dial err", err)
-        return
-    }   
-
-    var account[]string
-    err = client.Call(&account, "eth_accounts")
-    var result string
-    //var result hexutil.Big
-    err = client.Call(&result, "eth_getBalance", account[0], "latest")
-    //err = ec.c.CallContext(ctx, &result, "eth_getBalance", account, "latest")
-
-    if err != nil {
-        fmt.Println("client.Call err", err)
-        return
-    }   
-
-    fmt.Printf("account[0]: %s\nbalance[0]: %s\n", account[0], result)
-    //fmt.Printf("accounts: %s\n", account[0])
+func NewEthRpcClient(ethHttpRpc string) *EthRpcClient {
+	e := new(EthRpcClient)
+	ethRpcClient, dialHttpErr := rpc.DialHTTP(ethHttpRpc)
+	if dialHttpErr != nil {
+		log.Fatal("EthRpcClient:", dialHttpErr)
+	}
+	e.client = ethRpcClient
+	return e
 }
 ```
 
+##### 转发已签名交易
 
+```go
+func (ethClient *EthRpcClient) SendRawTransaction(rawTransactionData string) (transactionHash string, callErr error) {
+	transactionHash = ""
+	callErr = ethClient.client.Call(&transactionHash, "eth_sendRawTransaction", rawTransactionData)
+	return
+}
+```
+
+##### 获取交易信息
+
+```go
+type RpcTransaction struct {
+	BlockHash        string `json:"blockHash"`
+	BlockNumber      string `json:"blockNumber"`
+	From             string `json:"from"`
+	Gas              string `json:"gas"`
+	GasPrice         string `json:"gasPrice"`
+	Hash             string `json:"hash"`
+	Input            string `json:"input"`
+	Nonce            string `json:"nonce"`
+	To               string `json:"to"`
+	TransactionIndex string `json:"transactionIndex"`
+	Value            string `json:"value"`
+	V                string `json:"v"`
+	R                string `json:"r"`
+	S                string `json:"s"`
+}
+
+func (ethClient *EthRpcClient) GetTransactionByHash(txHash string) (transaction *RpcTransaction, callErr error) {
+	transaction = &RpcTransaction{}
+	callErr = ethClient.client.Call(transaction, "eth_getTransactionByHash", txHash)
+	return
+}
+```
 
 
 
@@ -609,6 +667,24 @@ func main() {
 #### transaction对象结构
 
 
+
+#### gasLimit与gasPrice含义
+
+> 为了衡量执行成功某一些操作需要花费的代价
+>
+> 某一些操作，比如转账，合约执行。合约执行比转账更加复杂，所需代价更高
+>
+> gas 中文翻译 汽油，瓦斯
+>
+> gasLimit ：总gas量。衡量完成操作所需的汽油总量，如果总量设低了，即完不成操作，gas还会被收取
+>
+> gasPrice: 每份gas的价格。
+>
+> 操作手续费=gasLimit * gasPrice
+>
+> 为了转账手续费可以由微调gasPrice，手续费低完成转账时会延长。设置gasLimit过低，会完不成操作，所以要选择合适的gasLimit。
+>
+> 这个网站https://ethgasstation.info/可以查询gasPrice与时间关系
 
 #### keystore文件与私钥关系
 

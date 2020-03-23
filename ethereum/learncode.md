@@ -7,6 +7,14 @@
 golang源码查看工具
 
 > https://github.com/ofabry/go-callvis
+>
+> 安装命令：
+>
+> ```bash
+> $ sudo apt-get install graphviz
+> $ go clone https://github.com/ofabry/go-callvis.git
+> $ cd go-calvis && go install 
+> ```
 
 #### 源码目录
 

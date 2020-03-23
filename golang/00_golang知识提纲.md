@@ -1,29 +1,33 @@
 [TOC]
 
-#### 文档
+### 文档
 
 > 官方文档：https://golang.org/
 > 本地文档: godoc -http=:6060
 > 在线中文文档：http://docscn.studygolang.com/
 > 中文git编译文章项目：https://git.oschina.net/liudiwu/pkgdoc.git
 
-#### 标准命令
+### 标准命令
 
-##### go build
+#### go build
 
 > 编译源码文件以及依赖包.源码文件:分为命令源码文件、库源码文件
 >
 > build命令源码文件，结果生成可执行文件，-o标记参数 命名可执行文件名称
 >
 > build库源码文件，生成.a后缀的库文件
->
+
 > golang二个编译器 1.gc golang自带编译器 2.gccgo gcc提供的golang编译器
 >
 > -v 标记参数打印被编译的代码包名字
->
-> -gcflags标记参数: 将参数传给gc自带编译器。即 go tool compile
->
-> -ldflags标记参数: 将参数传给连接器。即go tool link
+
+##### 环境变量CGO_CFLAGS
+
+> 等效-gcflags标记参数: 将参数传给gc自带编译器。即 go tool compile
+
+##### 环境变量CGO_LDFLAGS
+
+> 等效-ldflags标记参数: 将参数传给连接器。即go tool link
 
 ```bash
 $ go build -work -v
@@ -49,19 +53,33 @@ github.com/dchest/captcha
 > $ CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build ``test``.go
 > ```
 
-##### go install
+#### go install
 
-> 编译命令源码文件，会将命令放到$GOBIN目录下，如果$GOBIN未被设置值则会报错
+> 等价于先执行 go build，再将命令放到$GOBIN目录下
+>
+> 如果$GOBIN未被设置值则会报错
 >
 > 标准包的库源码文件放在$GOPATH/pkg下
 
-##### go mod
+#### go get 
 
-环境变量**GO111MODULE**
+> 等价于 git clone + go install
+>
+> 最终将命令放到$GOBIN目录下
+
+#### go mod
+
+##### 环境变量**GO111MODULE**
 
 > GO111MODULE=off   // 不用module功能，GOPATH模式寻找依赖包
 > GO111MODULE=on   // module模式，build时找module下的vendor，GOPATH承担下载依赖包到GOPATH/pkg/mod
 > GO111MODULE=auto  // 根据当前目录是否包含go.mod来判断
+
+##### 环境变量GOPROXY
+
+> go env -w GOPROXY=http://goproxy.cn,direct
+>
+> 制定go mod 代码下载代理
 
 > go mod download       // 下载依赖到本地缓存，查看GOCACHE缓存地址
 > go mod graph          //把模块之间的依赖图显示出来
@@ -71,12 +89,30 @@ github.com/dchest/captcha
 > go mod verify          // 检查当前模块的依赖是否已经存储在本地下载的源代码缓存中
 > go build -mod=vendor   // 依赖module下的vendor生成可执行文件
 
-#### 入门资料
+#### go env
+
+> go env -w 设定的变量值，存放在GOENV="~/.config/go/env"下
+
+#### go bug
+
+> 打开github/golang/go issue页面准备提交bug，会把当前系统信息携带到issue
+
+#### go clean
+
+> 可以去除源码包依赖的包go mod tidy执行后下载的源码
+
+#### go fmt
+
+> go fmt main.go
+>
+> 格式化main.go
+
+### 入门资料
 
 > 无闻中文讲解：https://www.jianshu.com/p/1da03e36f382
 > go example:https://gobyexample.com/
 
-#### 学习书籍推荐
+### 学习书籍推荐
 
 > 1. https://studygolang.com/books
 > 1.1 https://studygolang.com/book/71
@@ -88,9 +124,9 @@ github.com/dchest/captcha
 > 1.7 https://studygolang.com/book/65
 > 1.8 https://studygolang.com/book/42 - 基于select的多路复用
 
-#### 学习型gitlab项目推荐
+### 学习型gitlab项目推荐
 
-- ##### cache2go
+#### cache2go
 
 
 > 1. 并发安全
@@ -98,7 +134,7 @@ github.com/dchest/captcha
 > 3. cacheTable,cacheItem struct定义
 > 4. golang项目的git PR方式
 
-- ##### godis
+#### godis
 
 
 > 1. client与server设计类似mysql的命令行模式
@@ -109,7 +145,7 @@ github.com/dchest/captcha
 > 6. server响应信号
 > 7. client与server的通信协议编码
 
-- ##### groupcache
+#### groupcache
 
 
 > 1. 一致性hash的应用，hash环实现

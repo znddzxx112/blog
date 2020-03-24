@@ -97,8 +97,8 @@ show grants for user@host;
 
 ```
  select * from SCHEMA_PRIVILEGES where grantee="'z1'@'localhost'";
- ```
- 
+```
+
 #####  更改权限
 ```
 revoke select,insert on *.* from z2@localhost;
@@ -154,3 +154,15 @@ REVOKE ALL PRIVILEGES ON zjbook.* FROM 'cklzjbook'@'127.0.0.1'
 ```
 
 待续:mysql复制与clurse
+
+
+
+mysql8.0.13
+#创建账户
+create user 'root'@'172.16.10.203' identified by  'password'
+
+#赋予权限，with grant option这个选项表示该用户可以将自己拥有的权限授权给别人
+grant all privileges on *.* to 'root'@'172.16.10.203' with grant option
+
+#改密码&授权超用户，flush privileges 命令本质上的作用是将当前user和privilige表中的用户信息/权限设置从mysql库(MySQL数据库的内置库)中提取到内存里
+flush privileges;

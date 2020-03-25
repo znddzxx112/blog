@@ -2,7 +2,7 @@
 
 
 
-#### 资源
+### 资源
 
 > github：https://github.com/ethereum/go-ethereum
 >
@@ -12,11 +12,11 @@
 >
 > nodejs实现的web3.js库，文档：https://web3js.readthedocs.io/en/v1.2.6/
 
-#### 安装ethereum
+### 安装ethereum
 
 前提安装golang,C compilers 
 
-- 方式1：源码安装
+#### 方式1：源码安装
 
 ```bash
 $ git clone https://github.com/ethereum/go-ethereum
@@ -25,7 +25,7 @@ $ cd go-ethereum
 $ make geth
 ```
 
-- 方式2：ubuntu ppa
+#### 方式2：ubuntu ppa
 
 > https://github.com/ethereum/go-ethereum/wiki/Building-Ethereum
 
@@ -37,7 +37,7 @@ $ sudo apt-get install ethereum
 
 
 
-#### 命令
+### 命令
 
 - geth
 
@@ -71,46 +71,95 @@ $ sudo apt-get install ethereum
 
   > rlp导出调试工具
 
-#### 运行geth
+### 运行geth
 
-##### 运行主网节点
+#### 运行主网节点
 
 ```bash
-$ geth 
+$ geth  --syncmode=light --gcmode
 ```
 
- `--syncmode` 参数的同步模式不同，可以运行全节点，归档节点和轻节点
+ `--syncmode` 参数的同步模式
+
+`--syncmode=full`
+
+> full模式，从开始到结束，获取区块header和body,并且校验每个元素，需要下载所有区块信息。
+
+`--syncmode=fast`
+
+> fast模式，历史区块的快照，历史不会逐一验证，此后，像full节点一样进行同步操作。可能会丢失部分，不会影响后续
+
+`--syncmode=light`
+
+> 仅获取当前状态。会向full节点发起请求
 
 > 轻节点满足“创建账户”，“转账”，“部署合约与合约交互”三个场景，不涉及历史数据
 
-##### 测试网络运行节点
+--gcmode=archive
+
+> Archive mode means that all states of values in smart contracts as well as all balances of an account are stored.
+>
+> 保留合约和账户的历史数据，如果不使用，只能查到最新区块，某个账户的钱
+
+` --datadir` 参数可以选择数据保存位置
+
+#### 测试网络运行节点
 
 ```bash
-$ geth --testnet 
+// pow
+$ geth --testnet--syncmode=fast --datadir ~/data/eth-test-ropsten
+// poa
+$ geth --rinkeby  --syncmode=fast --datadir ~/data/eth-test-rinkeby
 ```
 
-##### 本地开发网络
+`--networkid=x` 区分网络，只有相同网络id值才可相连
+
+1，默认代表主网
+
+3, --testnet ropsten测试网络 pow网络
+
+4, --rinkeby rinkeby网络,POA网络
+
+国内区块浏览器
+
+> http://ropsten.ethhelp.cn/
+
+国内ropsten节点
+
+> 1. admin.addPeer('enode://2d1e1f1242c3b54ea56046f74f15943f47ab410e3c0b82bffb501793ebb19e147f8f0e63d01c2a6052b5db8d8c9caa9f1b04cabf917a38c38f78284192cebf55@47.93.7.170:20000'); *// 62ms*
+> 2. admin.addPeer('enode://7ab83cadce8b5f82a3154874454ec18eccf6076a4f3a6474fe62f77cb7586fddfa42852be9b7493f9df2a3e5fd74035470db24ac51f070f7770ef65a5a2949ef@47.98.221.237:43248'); *// 52ms*
+> 3. admin.addPeer('enode://9b65efd19d3b4df4a44cb20b9e9bc62d3051f2637c19518b01c31ace9bf648cbb9b1f207389589a8d34d0de3960046433863915f0dc7dd32b58807c20c7af9be@101.201.155.117:30303'); *// 62ms*
+> 4. admin.addPeer('enode://9c854be9dc0b2e79c95799a8b3ef5f8894338cf28dbf0aed3d3ea8530e5bb59266ba9250dffc84d57b3aca3f9db087d5da7099aa3d8a95bf7fbb0f62ae6026a9@47.96.231.38:30305'); *// 53ms*
+> 5. admin.addPeer('enode://c5773269cee16da31342bc9bc525de1bc5e1de492be138bc24dadfa1a14d67fffa556b1da64566b4a61dac5b76db79eb39e74dbf19835dac8e516dd34a5ad5a3@116.62.148.208:30303'); *// 45ms*
+
+rinkeby水龙头网站
+
+> https://faucet.rinkeby.io/
+
+#### 本地开发网络
 
 ```
-$ geth --dev 
+$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-dev --rpc --rpcaddr=localhost --rpcport 8545
 ```
 
-`--datadir` 参数可以选择数据保存位置
+`--dev`  搭建一个POA(proof-of-authority)私有网络
 
-##### 部署私有网络（再造一个 以太坊）
+`--dev.period=0` 只有交易产生时，才会进行挖矿
+
+#### 部署私有网络（再造一个 以太坊）
 
 > https://github.com/ethereum/go-ethereum#operating-a-private-network
 
-##### docker方式运行节点
+#### docker方式运行节点
 
 > https://github.com/ethereum/go-ethereum#docker-quick-start
 
-#### 编程语言与`geth`节点交互
+### 编程语言与`geth`节点交互
 
 > 作为开发者，不满足通过geth attach提供的方式与geth交互。
 >
 
-##### geth中与json-rpc相关参数
+#### geth中与json-rpc相关参数
 
 - `--rpc` Enable the HTTP-RPC server
 - `--rpcaddr` HTTP-RPC server listening interface (default: `localhost`)
@@ -144,7 +193,7 @@ geth有几种api，`admin,debug,eth,miner,net,personal,shh,txpool,web3`
 
 在控制台输入`web3`能看到所有的接口名称
 
-##### 各种语言与geth通信
+#### 各种语言与geth通信
 
 实现如下json-rpc规范文档，即可
 
@@ -156,11 +205,11 @@ nodejs已经实现json-rpc，库名称web3.js文档
 
 > https://web3js.readthedocs.io/en/v1.2.6/web3-eth.html
 
-#### 本地开发环境搭建
+### 本地开发环境搭建
 
 ```bash
 $ mkdir -p ~/data/eth-test
-$ geth --dev --dev.period 0 --datadir ~/data/eth-test --rpc --rpcaddr=localhost --rpcport 8545
+$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-test --rpc --rpcaddr=localhost --rpcport 8545
 ```
 
 > --dev.period 出块周期 0:代表交易发生时才出块
@@ -175,7 +224,7 @@ $ geth --dev --dev.period 0 --datadir ~/data/eth-test --rpc --rpcaddr=localhost 
 >
 > --syncmode=fast
 
-连接控制台
+#### 连接控制台
 
 ```bash
 $ geth --datadir ~/data/eth-test attach
@@ -185,7 +234,7 @@ $ geth attach ~/data/eth-test/geth.ipc
 
 
 
-#### nodejs的web3.js库实现关键技术
+### nodejs的web3.js库实现关键技术
 
 > 这里采用web3.js库作为基础
 >
@@ -196,7 +245,7 @@ const lweb3 = new Web3()
 const web3= new Web3(new Web3.providers.HttpProvider(config.geth))
 ```
 
-##### 创建离线钱包
+#### 创建离线钱包
 
 > 目的存储keystore文件在手机上
 
@@ -236,7 +285,7 @@ const web3= new Web3(new Web3.providers.HttpProvider(config.geth))
     }
 ```
 
-##### 通过keystore导入钱包
+#### 通过keystore导入钱包
 
 > 目的得到address验证密码是否正确，并把keystore存储
 
@@ -245,7 +294,7 @@ let account = web3.eth.accounts.decrypt(keystore, password)
 console.log(account.address, account.privateKey)
 ```
 
-##### 通过私钥导入钱包
+#### 通过私钥导入钱包
 
 > 目的通过私钥和密码，生成keystore文件
 
@@ -283,7 +332,7 @@ console.log(account.address, account.privateKey)
     }
 ```
 
-##### 通过助记词导入钱包和导出钱包
+#### 通过助记词导入钱包和导出钱包
 
 > BIP39钱包助记词规范，可以找相应实现的各个语言的库
 >
@@ -291,7 +340,7 @@ console.log(account.address, account.privateKey)
 
 
 
-##### keystore形式和私钥形式导出钱包
+#### keystore形式和私钥形式导出钱包
 
 > web3.eth.accounts.decryp()验证通过，就可以将keystore内容展示出来,或者 私钥展示出来
 
@@ -319,7 +368,7 @@ account = lweb3.eth.accounts.decryp({
             }, "123456")
 ```
 
-##### 修改keystore密码
+#### 修改keystore密码
 
 > 先用旧密码解锁keystore,并得到私钥
 >
@@ -331,7 +380,7 @@ oldaccount = await lweb3.eth.accounts.decrypt(keystorev3 json,oldpassword)
 lweb3.eth.accounts.encrypt(oldaccount.privateKey, newPassword)
 ```
 
-##### 转账
+#### 转账
 
 > 离线钱包考虑安全性的做法
 >
@@ -400,7 +449,7 @@ let gasPrice = await web3.eth.getGasPrice();
 
 
 
-##### 获取地址余额
+#### 获取地址余额
 
 ```js
 web3.eth.getBalance(address, block)
@@ -412,7 +461,7 @@ web3.eth.getBalance(address, block)
 >
 > 方法含义：到某一个区块时，某一个address的余额是多少
 
-##### 获取区块信息【block】
+#### 获取区块信息【block】
 
 ```js
 // 参数根据区块number或者hash，返回区块信息
@@ -423,7 +472,7 @@ web3.eth.getBlockTransactionCount(blockHashOrBlockNumber).then(console.log)
 web3.eth.getBlockUncleCount(blockHashOrBlockNumber).then(console.log);
 ```
 
-##### 获取转账信息【transaction】
+#### 获取转账信息【transaction】
 
 ```js
 // 参数根据区块number或者hash，返回转账信息
@@ -439,7 +488,7 @@ web3.eth.getBlockUncleCount(blockHashOrBlockNumber).then(console.log);
 
 
 
-##### 获取一个地址历史转账记录和转账笔数
+#### 获取一个地址历史转账记录和转账笔数
 
 web3.js没有提供查一个地址的历史转账记录，有以下三种实现方式
 
@@ -474,9 +523,9 @@ web3.js没有提供查一个地址的历史转账记录，有以下三种实现�
 
 
 
-##### 一段信息用私钥签名与公钥验签过程
+#### 一段信息用私钥签名与公钥验签过程
 
-私钥签名过程
+##### 私钥签名过程
 
 > 先从keystore文件+password中获取私钥
 > 
@@ -490,7 +539,7 @@ let account = await lweb3.eth.accounts.decrypt(keystore文件内容, password);
             // signature.signature
 ```
 
-公钥验签过程
+##### 公钥验签过程
 
 > 根据signature.signature和message,就可以返回签名私钥对应的地址
 
@@ -503,9 +552,9 @@ let message = req.body.message;
 // 最后校对address即可
 ```
 
-##### 交易用私钥签名与公钥验签过程
+#### 交易用私钥签名与公钥验签过程
 
-交易用私钥签名过程
+##### 交易用私钥签名过程
 
 ```js
 let gasPrice = await web3.eth.getGasPrice();
@@ -521,7 +570,7 @@ let gasPrice = await web3.eth.getGasPrice();
             console.log(tx.rawTransaction);
 ```
 
-交易公钥验签过程
+##### 交易公钥验签过程
 
 ```js
  let rawTransaction = req.body.rawTransaction;
@@ -530,7 +579,7 @@ let gasPrice = await web3.eth.getGasPrice();
             console.log(address);
 ```
 
-##### 转账已签名交易
+#### 转账已签名交易
 
 ```js
 let rawTransaction = req.body.rawTransaction;
@@ -539,7 +588,7 @@ let transaction= await web3.eth.sendSignedTransaction(rawTransaction);
 // transaction 是transaction对象
 ```
 
-##### 区块产生、转账交易、地址变动的事件订阅
+#### 区块产生、转账交易、地址变动的事件订阅
 
 > web3提供这三种时间监听
 >
@@ -569,13 +618,13 @@ web3.eth.subscribe('logs', {
 
 
 
-#### geth自带控制台实现关键技术
+### geth自带控制台实现关键技术
 
 
 
 
 
-#### golang实现关键技术
+### golang实现关键技术
 
 > 采用ethereum官方实现golang的rpc代码库
 >
@@ -585,7 +634,7 @@ web3.eth.subscribe('logs', {
 >
 > https://github.com/ethereum/wiki/wiki/JSON-RPC
 
-##### 定义基本EthRpcClient结构
+#### 定义基本EthRpcClient结构
 
 > 这里以http-rpc为例子，在实际项目中定义EthRpcClient结构体，方便在项目中调用
 >
@@ -621,7 +670,7 @@ func NewEthRpcClient(ethHttpRpc string) *EthRpcClient {
 }
 ```
 
-##### 转发已签名交易
+#### 转发已签名交易
 
 ```go
 func (ethClient *EthRpcClient) SendRawTransaction(rawTransactionData string) (transactionHash string, callErr error) {
@@ -631,7 +680,7 @@ func (ethClient *EthRpcClient) SendRawTransaction(rawTransactionData string) (tr
 }
 ```
 
-##### 获取交易信息
+#### 获取交易信息
 
 ```go
 type RpcTransaction struct {
@@ -660,15 +709,15 @@ func (ethClient *EthRpcClient) GetTransactionByHash(txHash string) (transaction 
 
 
 
-#### block对象结构
+### block对象结构
 
 
 
-#### transaction对象结构
+### transaction对象结构
 
 
 
-#### gasLimit与gasPrice含义
+### gasLimit与gasPrice含义
 
 > 为了衡量执行成功某一些操作需要花费的代价
 >
@@ -686,7 +735,7 @@ func (ethClient *EthRpcClient) GetTransactionByHash(txHash string) (transaction 
 >
 > 这个网站https://ethgasstation.info/可以查询gasPrice与时间关系
 
-#### keystore文件与私钥关系
+### keystore文件与私钥关系
 
 > 如果私钥直接进行存储，一旦被盗，数字资产将被洗劫一空
 >
@@ -717,7 +766,7 @@ func (ethClient *EthRpcClient) GetTransactionByHash(txHash string) (transaction 
 
 
 
-#### 其他作者优秀文章
+### 其他作者优秀文章
 
 > 这个作者的几篇文章都不错
 >

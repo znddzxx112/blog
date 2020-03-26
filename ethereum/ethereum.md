@@ -37,7 +37,7 @@ $ sudo apt-get install ethereum
 
 
 
-### 命令
+### 标准命令
 
 - geth
 
@@ -76,7 +76,7 @@ $ sudo apt-get install ethereum
 #### 运行主网节点
 
 ```bash
-$ geth  --syncmode=light --gcmode
+$ geth  --syncmode=light --datadir=~/data/eth-main 
 ```
 
  `--syncmode` 参数的同步模式
@@ -94,6 +94,8 @@ $ geth  --syncmode=light --gcmode
 > 仅获取当前状态。会向full节点发起请求
 
 > 轻节点满足“创建账户”，“转账”，“部署合约与合约交互”三个场景，不涉及历史数据
+>
+> 速度最快半个小时完事，磁盘大小300M左右
 
 --gcmode=archive
 
@@ -103,13 +105,38 @@ $ geth  --syncmode=light --gcmode
 
 ` --datadir` 参数可以选择数据保存位置
 
+##### 主网节点配置
+
+> ```undefined
+> CPU: 8 core
+> 内存: 16G
+> 硬盘: 500G SSD (固态硬盘)
+> 网络: 5M+
+> ```
+
+##### 进入控制台
+
+```bash
+$ geth attach ~/data/eth-main/geth.ipc
+```
+
+##### 查看同步状态
+
+> eth.syncing
+>
+> false // 代表同步成功
+
+查看当前区块
+
+> eth.blockNumber
+
 #### 测试网络运行节点
 
 ```bash
 // pow
-$ geth --testnet--syncmode=fast --datadir ~/data/eth-test-ropsten
+$ geth --testnet --syncmode=light --datadir ~/data/eth-test-ropsten
 // poa
-$ geth --rinkeby  --syncmode=fast --datadir ~/data/eth-test-rinkeby
+$ geth --rinkeby  --syncmode=light --datadir ~/data/eth-test-rinkeby --bootnodes=enode://a24ac7c5484ef4ed0c5eb2d36620ba4e4aa13b8c84684e1b4aab0cebea2ae45cb4d375b77eab56516d34bfbd3c1a833fc51296ff084b770b94fb9028c4d25ccf@52.169.42.101:30303
 ```
 
 `--networkid=x` 区分网络，只有相同网络id值才可相连
@@ -136,15 +163,22 @@ rinkeby水龙头网站
 
 > https://faucet.rinkeby.io/
 
-#### 本地开发网络
+#### 本地开发环境搭建
 
-```
+```bash
+$ mkdir -p ~/data/eth-dev
 $ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-dev --rpc --rpcaddr=localhost --rpcport 8545
 ```
 
-`--dev`  搭建一个POA(proof-of-authority)私有网络
-
-`--dev.period=0` 只有交易产生时，才会进行挖矿
+> --dev.period 出块周期 0:代表交易发生时才出块
+>
+> --dev 允许挖矿,搭建一个POA(proof-of-authority)私有网络
+>
+> --rpc 启用rpc,http-rpc
+>
+> --rpcaddr 地址
+>
+> --rpcport 端口
 
 #### 部署私有网络（再造一个 以太坊）
 
@@ -179,7 +213,9 @@ geth有几种api，`admin,debug,eth,miner,net,personal,shh,txpool,web3`
 
 通过`--rpcapi` `--ipcapi`  `--wsapi`  限定http,ipc,ws允许使用哪些api
 
-`admin,debug,miner,persion,txpool`的文档在下方
+#### geth控制台命令文档
+
+`admin,debug,miner,personal,txpool`的文档在下方
 
 > https://github.com/ethereum/go-ethereum/wiki/Management-APIs
 
@@ -193,7 +229,7 @@ geth有几种api，`admin,debug,eth,miner,net,personal,shh,txpool,web3`
 
 在控制台输入`web3`能看到所有的接口名称
 
-#### 各种语言与geth通信
+#### 各种语言与geth通信JSON-RPC文档
 
 实现如下json-rpc规范文档，即可
 
@@ -205,36 +241,7 @@ nodejs已经实现json-rpc，库名称web3.js文档
 
 > https://web3js.readthedocs.io/en/v1.2.6/web3-eth.html
 
-### 本地开发环境搭建
-
-```bash
-$ mkdir -p ~/data/eth-test
-$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-test --rpc --rpcaddr=localhost --rpcport 8545
-```
-
-> --dev.period 出块周期 0:代表交易发生时才出块
->
-> --dev 允许挖矿
->
-> --rpc 启用rpc,http-rpc
->
-> --rpcaddr 地址
->
-> --rpcport 端口
->
-> --syncmode=fast
-
-#### 连接控制台
-
-```bash
-$ geth --datadir ~/data/eth-test attach
-// 或者
-$ geth attach ~/data/eth-test/geth.ipc
-```
-
-
-
-### nodejs的web3.js库实现关键技术
+### nodejs实现关键操作
 
 > 这里采用web3.js库作为基础
 >
@@ -618,13 +625,70 @@ web3.eth.subscribe('logs', {
 
 
 
-### geth自带控制台实现关键技术
+### geth控制台实现关键操作
+
+> 如果有多种网络，把 --datadir带上较好
+
+#### 创建账号
+
+```bash
+$ geth --datadir ~/data/eth-test-ropsten account new
+```
+
+#### 私钥导入账号
+
+> personal.importRawKey("938","keypass")
+
+#### 查看账号
+
+```bash
+$ geth --datadir ~/data/eth-test-ropsten account list
+Account #0: {abab347093fa054a2d40b88426c4686abea2e99a} keystore:///home/
+```
+
+#### 更新账号密码
+
+```bash
+$ geth --datadir ~/data/eth-test-ropsten account update 0
+```
+
+#### 连接控制台
+
+```bash
+$ geth --datadir ~/data/eth-test-ropsten attach
+// 或者
+$ geth attach ~/data/eth-test-ropsten/geth.ipc
+// 或者
+$ geth --datadir ~/data/eth-test-ropsten console
+```
+
+> attach 连接一个节点
+>
+> console不连接节点
+
+#### 转账
+
+> 在控制台执行
+
+##### 解锁账户
+
+```bash
+> personal.unlockAccount()
+```
+
+##### 发送转账
+
+```bash
+>eth.sendTransaction({from:"0x7f53309f95559c52d08f18724c0b24aa758d1953",to:"0xf9143e
+3b7de8ce91e463e30480f5afe84d3067ba",value:web3.toWei(10,"ether")})
+"0x5a6fbb3161329ca2591b7ecbcaca8a15a94cac5d402fce929f24504c76b8b7bb"
+```
+
+#### 没有命令可以直接导出私钥，基点是keystor文件
 
 
 
-
-
-### golang实现关键技术
+### golang实现关键操作
 
 > 采用ethereum官方实现golang的rpc代码库
 >

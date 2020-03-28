@@ -830,6 +830,184 @@ func (ethClient *EthRpcClient) GetTransactionByHash(txHash string) (transaction 
 
 
 
+### 智能合约
+
+关于智能合约solidity语言教程
+
+> https://solidity-cn.readthedocs.io/zh/develop/
+
+#### 部署流程
+
+大致如下：
+
+>  1.启动一个以太坊节点
+>  2.编译已写好的智能合约
+>  3.将编译好的智能合约部署到节点网络（这一步会消耗以太币，还需要使用你的节点的默认地址或者指定地址来给合约签名。） => 获得合约的区块链地址和ABI；
+>  4.用web3.js提供的JavaScript API来调用合约
+
+#### 安装Solidity编译器Solc
+
+```bash
+sudo add-apt-repository ppa:ethereum/ethereum
+sudo apt-get update
+sudo apt-get install solc
+```
+
+> 文档地址：https://solidity-cn.readthedocs.io/zh/develop/using-the-compiler.html#commandline-compiler
+
+#### 使用Webstorm作为sol文件编辑器
+
+> 安装插件Intellij-Solidity
+
+#### truffle安装
+
+> 类似于solidity语言依赖管理，类似java的maven
+
+```bash
+$ npm install -g truffle
+```
+
+#### ganache安装
+
+```bash
+$ npm install -g ganache-cli
+```
+
+> Ganache是为以太坊开发准备的个人区块链钱包，你可以用它执行智能合约，研发应用和执行测试用例。Ganache的前身是testrpc，跟testrpc的作用一样。
+
+#### 代码例子
+
+##### 投票
+
+> 主席发起多个提案以及允许可以投票的账户地址，投票账户直接投或者把票委托给其他账户（增加其他账户的权重）
+
+##### 拍卖
+
+> 拍卖价格公开：每个账户发送value给合约，合约是否为最高价。
+>
+> 其他非最高价可以划转回原账户
+>
+> 拍卖价格非公开（盲拍）
+
+##### 远程购买
+
+> 卖方创建合约，在合约非锁定时，卖方可以撤销
+>
+> 买方花2倍的资金转账到合约，使合约状态为锁定，卖方不可撤销
+>
+> 买方可触发确认收货，合约状态closed，资金划转
+>
+> 商业模式：
+>
+> 1. 卖方必须要买方确认，才可以拿到资金
+>
+> 2. 买方花费2倍资金，才拿到商品
+
+#### 智能合约helloword项目作为例子
+
+```bash
+$ mkdir helloword
+$  truffle init
+```
+
+##### 编写合约
+
+```bash
+$ vi contracts/Hello.sol
+pragma solidity >=0.5.0 <0.7.0;
+contract Hello {
+    address public owner;
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function getOwner() public view returns(address) {
+        return owner;
+    }
+}
+```
+
+##### 编写迁移
+
+```bash
+$ vi migrations
+const Hello = artifacts.require("Hello");
+
+module.exports = function(deployer) {
+    deployer.deploy(Hello);
+};
+```
+
+修改配置文件，连接到节点
+
+```bash
+$ truffle-config.js
+development: {
+     host: "127.0.0.1",     // Localhost (default: none)
+     port: 7545,            // Standard Ethereum port (default: none)
+     from: "0x52652789342a4c7A828b1E7A11c78A748476D511",//Account to send txs from (default: accounts[0])
+     network_id: "5777",       // Any network (default: none)
+    },
+```
+
+##### 开启ganache-cli节点
+
+> ganache-cli开启的节点是搭配truffle开发框架，默认生成10个账户用于调试
+
+```bash
+$ ganache-cli -h 127.0.0.1 -p 7545 --networkId 5777 -a
+```
+
+##### 编译和部署合约,并调用合约的方法
+
+```bash
+$ truffle console --network development
+>  compile
+>  migrate
+>  deploy
+>  Hello.deployed().then(instance=>contract=instance)
+> contract.getOwner()
+```
+
+##### 开启geth开发节点
+
+```bash
+$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-dev --rpc --rpcaddr=localhost --rpcport 8545
+```
+
+##### 在truffle-config.js增加连接geth开发节点配置
+
+```bash
+$ vi truffle-config.js 
+networks: {
+    gethdev: {
+          host: "localhost",     // Localhost (default: none)
+          port: 8545,            // Standard Ethereum port (default: none)
+          network_id: "1444",       // Any network (default: none)
+        },
+    }
+```
+
+##### 编译和部署合约,并调用合约的方法
+
+```bash
+$ truffle console --network gethdev
+truffle(gethdev)> compile
+truffle(gethdev)> migrate
+truffle(gethdev)>Hello.deployed().then(instance=>contract=instance)
+truffle(gethdev) > contract.getOwner()
+```
+
+##### 事件监听
+
+
+
+#### 深入理解Solidity
+
+> https://solidity-cn.readthedocs.io/zh/develop/solidity-in-depth.html
+
+
+
 ### 其他作者优秀文章
 
 > 这个作者的几篇文章都不错
@@ -837,3 +1015,4 @@ func (ethClient *EthRpcClient) GetTransactionByHash(txHash string) (transaction 
 > https://www.cnblogs.com/tinyxiong/p/9927300.html
 >
 > 关于keystore介绍的配图来源：https://www.cnblogs.com/405845829qq/p/10103747.html
+

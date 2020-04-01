@@ -832,9 +832,53 @@ func (ethClient *EthRpcClient) GetTransactionByHash(txHash string) (transaction 
 
 ### 智能合约
 
-关于智能合约solidity语言教程
+##### 关于智能合约solidity语言教程
 
 > https://solidity-cn.readthedocs.io/zh/develop/
+
+##### eth浏览器
+
+> https://eth.tokenview.com/cn/
+
+eth代币查看
+
+> https://cn.etherscan.com/
+
+usdt代币的合约 https://cn.etherscan.com/address/0xdac17f958d2ee523a2206206994597c13d831ec7#code
+
+#### 合约概念
+
+##### 事务
+
+> 一般来说，写入数据称为事务，而读取数据称为调用。事务和调用的处理方式非常不同。
+>
+> 事务改变网络的状态。一般账户之间转账，执行合同，部署合同。
+>
+> 事务执行需要gas和时间
+>
+> 事务调用之后一般不能立即收到返回值，因为不是立即执行。会立即返回事务id
+
+事务特点
+
+> 消耗gas
+>
+> 改变网络状态
+>
+> 不会立即执行
+>
+> 不要期望有返回值，仅仅返回事务id
+
+##### 调用
+
+调用特点
+
+> 不会消耗gas
+>
+> 不会改变网络状态
+>
+> 立即执行
+>
+> 有返回值
 
 #### 部署流程
 
@@ -842,7 +886,7 @@ func (ethClient *EthRpcClient) GetTransactionByHash(txHash string) (transaction 
 
 >  1.启动一个以太坊节点
 >  2.编译已写好的智能合约
->  3.将编译好的智能合约部署到节点网络（这一步会消耗以太币，还需要使用你的节点的默认地址或者指定地址来给合约签名。） => 获得合约的区块链地址和ABI；
+>  3.将编译好的智能合约部署到节点网络（这一步会消耗以太币，还需要使用你的节点的默认地址或者指定地址来给合约签名。） => 获得合约地址
 >  4.用web3.js提供的JavaScript API来调用合约
 
 #### 安装Solidity编译器Solc
@@ -862,18 +906,26 @@ sudo apt-get install solc
 #### truffle安装
 
 > 类似于solidity语言依赖管理，类似java的maven
+>
+> 自己与区块链进行交互是繁琐，truffle让交互变得轻松
 
 ```bash
 $ npm install -g truffle
 ```
 
-#### ganache安装
+文档
+
+> https://www.trufflesuite.com/docs/truffle/quickstart
+
+
+
+#### ganache-cli安装
 
 ```bash
 $ npm install -g ganache-cli
 ```
 
-> Ganache是为以太坊开发准备的个人区块链钱包，你可以用它执行智能合约，研发应用和执行测试用例。Ganache的前身是testrpc，跟testrpc的作用一样。
+> Ganache-cli是为以太坊开发准备的个人区块链钱包，你可以用它执行智能合约，研发应用和执行测试用例。Ganache的前身是testrpc，跟testrpc的作用一样。
 
 #### 代码例子
 
@@ -900,103 +952,119 @@ $ npm install -g ganache-cli
 > 商业模式：
 >
 > 1. 卖方必须要买方确认，才可以拿到资金
->
-> 2. 买方花费2倍资金，才拿到商品
+>2. 买方花费2倍资金，才拿到商品
 
-#### 智能合约helloword项目作为例子
+#### 智能合约MetaCoin项目作为例子
+
+```bash
+$ mkdir MetaCoin
+$ cd MetaCoin
+$ truffle unbox metacoin
+```
+
+> metaCoin github地址:https://github.com/truffle-box/metacoin-box
+
+正常新建项目使用命令
 
 ```bash
 $ mkdir helloword
 $  truffle init
 ```
 
-##### 编写合约
+##### ganache-cli启动节点
 
 ```bash
-$ vi contracts/Hello.sol
-pragma solidity >=0.5.0 <0.7.0;
-contract Hello {
-    address public owner;
-    constructor() public {
-        owner = msg.sender;
+$ ganache-cli -h 127.0.0.1 -p 7545 --networkId 5777
+```
+
+##### 修改truffle-config.js配置
+
+```javascript
+networks: {
+      development: {
+          host: "127.0.0.1",     // Localhost (default: none)
+          port: 7545,            // Standard Ethereum port (default: none)
+          // from: "0x52652789342a4c7A828b1E7A11c78A748476D511",//Account to send txs from (default: accounts[0])
+          network_id: "5777",       // Any network (default: none)
+      },
+      compilers: {
+        solc: {
+            version: "0.4.25",    // Fetch exact version from solc-bin (default: truffle's version)
+            // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+            // settings: {          // See the solidity docs for advice about optimization and evmVersion
+            //  optimizer: {
+            //    enabled: false,
+            //    runs: 200
+            //  },
+            //  evmVersion: "byzantium"
+            // }
+        }
     }
-
-    function getOwner() public view returns(address) {
-        return owner;
-    }
-}
+   }
 ```
 
-##### 编写迁移
-
-```bash
-$ vi migrations
-const Hello = artifacts.require("Hello");
-
-module.exports = function(deployer) {
-    deployer.deploy(Hello);
-};
-```
-
-修改配置文件，连接到节点
-
-```bash
-$ truffle-config.js
-development: {
-     host: "127.0.0.1",     // Localhost (default: none)
-     port: 7545,            // Standard Ethereum port (default: none)
-     from: "0x52652789342a4c7A828b1E7A11c78A748476D511",//Account to send txs from (default: accounts[0])
-     network_id: "5777",       // Any network (default: none)
-    },
-```
-
-##### 开启ganache-cli节点
-
-> ganache-cli开启的节点是搭配truffle开发框架，默认生成10个账户用于调试
-
-```bash
-$ ganache-cli -h 127.0.0.1 -p 7545 --networkId 5777 -a
-```
-
-##### 编译和部署合约,并调用合约的方法
+##### 连接节点
 
 ```bash
 $ truffle console --network development
->  compile
->  migrate
->  deploy
->  Hello.deployed().then(instance=>contract=instance)
-> contract.getOwner()
-```
-
-##### 开启geth开发节点
-
-```bash
-$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-dev --rpc --rpcaddr=localhost --rpcport 8545
-```
-
-##### 在truffle-config.js增加连接geth开发节点配置
-
-```bash
-$ vi truffle-config.js 
-networks: {
-    gethdev: {
-          host: "localhost",     // Localhost (default: none)
-          port: 8545,            // Standard Ethereum port (default: none)
-          network_id: "1444",       // Any network (default: none)
-        },
-    }
 ```
 
 ##### 编译和部署合约,并调用合约的方法
 
+> https://www.trufflesuite.com/docs/truffle/getting-started/interacting-with-your-contracts
+>
+> 存在疑问
+
 ```bash
-$ truffle console --network gethdev
-truffle(gethdev)> compile
-truffle(gethdev)> migrate
-truffle(gethdev)>Hello.deployed().then(instance=>contract=instance)
-truffle(gethdev) > contract.getOwner()
+$ truffle compile --network development
+$ truffle migrate --network development
+或者
+truffle(development)> compile
+truffle(development)> migrate
+// 调用
+truffle(development)> let ins = await MetaCoin.deployed()
+等效于
+truffle(development)> let ins = ConvertLib.at("0x79804eCc027E2Fc9E1D1ACec6bad402032414Dfe")
+
+truffle(development)> let accounts = await web3.eth.getAccounts()
+truffle(development)> let balance = await ins.getBalance(accounts[0])
+truffle(development)> balance.toNumber()
+truffle(development)>  let result = await  instance.sendCoin(accounts[1], 10, {from: accounts[0]})
 ```
+
+> truffle(development)> balance.toNumber() 
+>
+> 将BN对象，转成number
+>
+> {from: accounts[0]} 是隐藏对象，即Ethereum transaction
+>
+> 有以下字段
+>
+> - `from`
+> - `to`
+> - `gas`
+> - `gasPrice`
+> - `value`
+> - `data`
+> - `nonce`
+>
+> result
+>
+> - `result.tx` *(string)* - Transaction hash
+> - `result.logs` *(array)* - Decoded events (logs)
+> - `result.receipt` *(object)* - Transaction receipt (includes the amount of gas used)
+
+##### 重新发布合约
+
+```bash
+truffle(develop)> let newInstance = await MetaCoin.new()
+truffle(develop)> newInstance.address
+'0x64307b67314b584b1E3Be606255bd683C835A876'
+```
+
+
+
+
 
 ##### 事件监听
 

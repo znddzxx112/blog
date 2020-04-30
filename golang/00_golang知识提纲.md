@@ -107,6 +107,16 @@ github.com/dchest/captcha
 >
 > 格式化main.go
 
+### 项目源码分析工具
+
+#### go-callvis
+
+> go get -u github.com/ofabry/go-callvis
+
+比如
+
+> go-callvis -group pkg,type -focus github.com/apache/rocketmq-client-go/v2/internal ./examples/producer/simple
+
 ### 入门资料
 
 > 无闻中文讲解：https://www.jianshu.com/p/1da03e36f382

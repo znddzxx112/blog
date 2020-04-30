@@ -198,6 +198,12 @@ cd ~/local/xmind8/XMind_amd64 && ./XMind &
 >
 > https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-engine---community-1#install-docker-engine---community
 >
+> 可以使用deb进行安装
+>
+>  sudo dpkg -i containerd.io_1.2.6-3_amd64.deb
+>  sudo dpkg -i docker-ce-cli_19.03.6~3-0~ubuntu-disco_amd64.deb
+>   sudo dpkg -i docker-ce_19.03.6~3-0~ubuntu-disco_amd64.deb
+>
 > 安装完后把用户加入docker组中，然后重启
 
 ```bash

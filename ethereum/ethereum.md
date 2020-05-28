@@ -167,7 +167,8 @@ rinkeby水龙头网站
 
 ```bash
 $ mkdir -p ~/data/eth-dev
-$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-dev --rpc --rpcaddr=localhost --rpcport 8545
+$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-dev --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --ws --wsaddr "0.0.0.0" --wsorigins="*"  --wsport 8546
+
 ```
 
 > --dev.period 出块周期 0:代表交易发生时才出块
@@ -679,8 +680,7 @@ $ geth --datadir ~/data/eth-test-ropsten console
 ##### 发送转账
 
 ```bash
->eth.sendTransaction({from:"0x7f53309f95559c52d08f18724c0b24aa758d1953",to:"0xf9143e
-3b7de8ce91e463e30480f5afe84d3067ba",value:web3.toWei(10,"ether")})
+>eth.sendTransaction({from:"0x7f53309f95559c52d08f18724c0b24aa758d1953",to:"0xf9143e3b7de8ce91e463e30480f5afe84d3067ba",value:web3.toWei(10,"ether")})
 "0x5a6fbb3161329ca2591b7ecbcaca8a15a94cac5d402fce929f24504c76b8b7bb"
 ```
 
@@ -731,6 +731,9 @@ func NewEthRpcClient(ethHttpRpc string) *EthRpcClient {
 	}
 	e.client = ethRpcClient
 	return e
+}
+func (ethClient *EthRpcClient) GetClient() *ethclient.Client {
+	return ethclient.NewClient(ethClient.client)
 }
 ```
 

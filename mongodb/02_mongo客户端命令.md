@@ -1,61 +1,63 @@
-#### mongo客户端命令
+[TOC]
 
-##### 1)启动mongodb
+### mongo客户端命令
+
+#### 1)启动mongodb
 ```
      命令:mongod  --dbpath [你的mongodb数据存放的目录
       然后另开一个标签输入:mongo  
        前提是你已经将mongodb添加到环境变量中,否则需到mongodb安装目录的bin文件夹下去执行以上命令
 ```
 
-##### 链接数据库
+#### 链接数据库
 ```
 ./mongo --port
 ./mongo 192.168.1.102
 ```
 
-##### 停止mongodb
+#### 停止mongodb
 ```
 db.shutdownServer();
 ```
 
-##### 显示mongodb中有哪些数据库
+#### 显示mongodb中有哪些数据库
 ```
 > show dbs
 ```
 
-##### 显示当前正在使用的数据库
+#### 显示当前正在使用的数据库
 ```
 > db
 ```
 
-##### 选择使用的数据库
+#### 选择使用的数据库
 ```
 >use 你要使用的数据库名
 ```
 
-##### 登陆你要使用的数据库
+#### 登陆你要使用的数据库
 
 ```
 >db.auth(username,password)  username为用户名,password为密码
 ```
 
-##### 查看当前数据库有哪些表
+#### 查看当前数据库有哪些表
 
 ```
 >db.getCollectionNames()
 ```
 
-##### 显示数据库有哪些操作
+#### 显示数据库有哪些操作
 ```
 >db.help()
 ```
 
-##### 查看数据库下的表有哪些操作
+#### 查看数据库下的表有哪些操作
 ```
 >db.CollectionName.help()   CollectionName为要操作的表,以下CollectionName均为表名
 ```
 
-##### 查询操作
+#### 查询操作
 
 ```
 >db.CollectionName.find({}).pretty()  大括号里是查询条件,pretty()以格式化的形式输出
@@ -70,18 +72,18 @@ db.shutdownServer();
 获取指定条数
 ```
 
-##### 修改操作
+#### 修改操作
 ```
 >db.CollectionName.update({name:"mongo"},{$set:{name:"mongo_new"}}) //只更新一条
 >db.CollectionName.update({name:"mongo"},{$set:{name:"mongo_new"}},false,true) //更新多条
 ```
 
-###### 删除操作
+#### 删除操作
 ```
 >db.CollectionName.remove({name:"mongo"});
 ```
 
-##### 等待处理命令
+#### 等待处理命令
 ```
 10)特殊查询条件
 >$gt  大于
@@ -101,7 +103,7 @@ db.shutdownServer();
 >db.CollectionName.update({},{})   第一个大括号为更新条件,第二个为更新的内容,$set为更新原有数据,$inc为插入新数据
 ```
 
-##### 条件操作符
+#### 条件操作符
 ```
 db.collection.find({ "field" : { $gt: value } } ); // 大于: field > value
 db.collection.find({ "field" : { $lt: value } } ); // 小于: field < value
@@ -110,43 +112,43 @@ db.collection.find({ "field" : { $lte: value } } ); // 小于等于: field <= va
 db.collection.find({ "field" : { $gt: value1, $lt: value2 } } ); // value1 < field < value
 ```
 
-##### all操作
+#### all操作
 ```
 db.users.find({age : {$all : [6, 8]}});
 // 必须全部满足
 ```
 
-##### $exists判断字段是否存在
+#### $exists判断字段是否存在
 ```
 db.users.find({age: {$exists: true}});
 ```
 
-##### $ne不等于
+#### $ne不等于
 ```
 db.things.find( { x : { $ne : 3 } } );
 ```
 
-##### $in包含
+#### $in包含
 ```
 db.things.find({x:{$in: [2,4,6]}});
 ```
 
-##### $nin不包含
+#### $nin不包含
 ```
 db.things.find({x:{$nin: [2,4,6]}});
 ```
 
-##### 正则表达式匹配
+#### 正则表达式匹配
 ```
 db.users.find({name: {$regex: /^B.*/}});
 ```
 
-##### skip限制返回记录的起点
+#### skip限制返回记录的起点
 ```
 db.users.find().skip(3).limit(5);
 ```
 
-##### sort排序
+#### sort排序
 ```
 以年龄升序asc
 db.users.find().sort({age: 1});
@@ -154,9 +156,55 @@ db.users.find().sort({age: 1});
 db.users.find().sort({age: -1});
 ```
 
-##### 支持存储过程
+#### 支持存储过程
 
-##### GridFs 
+#### GridFs 
 ```
 透明的，分布式文件存储，有效保存大文件对象，巨大文件，视频，高清图片。
+```
+
+### mongo索引建立与删除操作
+
+- 参考文章：https://docs.mongodb.com/manual/indexes/
+
+> 查看索引：
+```
+db.feed.getIndexes();
+```
+> 创建稀疏索引：
+```
+db.feedlive.createIndex({userid:1},{spare:true});
+```
+> 创建组合索引：
+```
+db.feedlive.createIndex({userid:1,_id:-1}, {background: true});
+```
+> 创建唯一索引:
+```
+db.feedlive.createIndex({userid:1,_id:-1}, {unique:true});
+```
+> 删除索引:
+```
+db.feedlive.dropIndex({userid:1});
+```
+> 重建索引:
+```
+db.feedlive.reIndex();
+```
+
+
+### mongo导出数据
+
+- 建json文件
+```
+rs.slaveOk();
+print("pid,title,userid,videoUrl");
+db.debate.find({videoUrl:{$regex:/videoreplay/},valid:1}).forEach(function(debate){
+        print(debate._id.valueOf() + debate.pid + "," + debate.title + "," + debate.userid + "," + debate.videoUrl);
+});
+```
+
+- 执行命令并导出csv格式
+```
+/usr/local/mongodb3.2/bin/mongo --port 57119 newcircle_post /tmp/debate.js > /tmp/debate.csv
 ```

@@ -96,3 +96,14 @@ gitlab_rails['gitlab_shell_ssh_port'] = 8022
 浏览器访问http://gitlab.localhost.com:8090/
 
 输入root用户密码
+
+### gitlab api接口
+
+> 文档入口：https://docs.gitlab.com/ee/api/issues.html#list-project-issues
+
+
+
+比如：获取所有一个project在6月3日以后所有关闭的issue
+
+> http://192.168.3.165/api/v4/projects/150/issues?state=closed&created_after=2020-06-03T08:14:20.341Z
+

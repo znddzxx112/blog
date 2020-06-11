@@ -112,7 +112,12 @@ docker login
 docker logout
 ```
 
+#### 问题：使用root权限登录到容器中
+
+> docker run --user=root
+
 ### 制作镜像
+
 准备nginx配置文件,rc.local
 
 可参照

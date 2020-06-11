@@ -49,6 +49,8 @@ github.com/dchest/captcha
 **交叉编译**
 
 > ```bash
+> $ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ``test``.go
+> // mac
 > $ CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build ``test``.go
 > $ CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build ``test``.go
 > ```

@@ -726,27 +726,51 @@ replace bad/thing v1.4.5 => good/thing v1.4.5
 
 ### go pprof
 
-- install ghv
+> 这篇文章讲的很透彻
+>
+> https://cizixs.com/2017/09/11/profiling-golang-program/
 
-- go get pprof
-```
-go get -u github.com/google/pprof
-```
+### cpu profile展示了函数在cpu的耗时占用情况
 
-- http pprof
-```
+#### 用http请求得到cpu profile文件-线上采用
+
+> 安装install graphviz看图更加直观
+
+- 代码准备：起一个6060的监听服务
+
+```golang
 import _ "net/http/ppof"
 go func() {
-  http.ListenAndSever(":6061", nil)
+  http.ListenAndSever("localhost:6060", nil)
 }
 ```
 
-- use http pprof
+- 获取cpu profile文件和分析cpu profile文件
+
 ```
-// pprof -http=:8080 http://127.0.0.1:6061/debug/pprof/profile  Or go tool pprof http://127.0.0.1:6061/debug/pprof/profile
+可以直接在网页上查看：http://localhost:6060/debug/pprof/
+或者
+收集pprof分析结果：go tool pprof ./gateway http://localhost:6060/debug/pprof/profile
+通过web展示分析结果:
+go tool pprof -http=:8080 pprof.gateway.samples.cpu.001.pb.gz 
+通过cli展示分析结果：
+
 ```
 
-- pprof
+#### 用go test单元测试得到cpu profile文件
+
+执行单个go文件中具体一个测试方法
+
+```bash
+$ go test -v -run TestEthRpcClient_GetTransactionByHash -cpuprofile=cpu.prof transactions_test.go transactions.go rpc.go
+```
+
+
+
+#### 使用runtime的pprof包获取cpu profile文件
+
+> 上面针对http服务，非http服务就要采用这种方式
+
 ```
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to `file`")
 var memprofile = flag.String("memprofile", "", "write memory profile to `file`")
@@ -779,18 +803,67 @@ func main() {
 }
 ```
 
-- use pprof
+- 采集profile数据
 ```
 ./fortest --cpuprofile=cpuprofile --memprofile=memprofile
 pprof cpuprofile
->> png
+```
 
-Or
-pprof -http=:6061 cpuprofile 
+#### 使用火焰图展示cpu profile
+
+```bash
+ 1、 安装go-torch
+            go get github.com/uber/go-torch
+    2、安装FlameGraph
+           git clone https://github.com/brendangregg/FlameGraph.git
+			$ vim ~/.profile
+         export PATH=$PATH:~/local/FlameGraph 【这步一定要设置，生成火焰图时会用到】
+    3、安装graphviz (CentOS, Redhat) 
+          apt install graphviz
+```
+
+采集profile文件
+
+```
+$ go tool pprof ./pprof http://localhost:6060/debug/pprof/profile
+或者来自go test
+$ go test -v -run TestEthRpcClient_GetTransactionByHash -cpuprofile=cpu.prof -memprofile=mem.pro transactions_test.go transactions.go rpc.go
+```
+
+输出火焰图svg
+
+```
+$ go-torch -b ./pprof.gateway.samples.cpu.001.pb.gz -f 04.svg
+```
+
+#### 总结
+
+​		采集profile数据，最实用方式通过单元测试，预发布环境在runtime的pprof包。
+
+#### 创建性能分析镜像
+
+> https://github.com/znddzxx112/go-profile
+
+```Dockerfile
+FROM golang:1.13.5
+
+WORKDIR /go
+ENV GOPROXY https://goproxy.cn
+ENV GO111MODULE on
+ENV GOBIN $GOPATH/bin
+
+RUN apt update && apt install -y graphviz git && mkdir pprof && go get github.com/uber/go-torch
+RUN git clone https://github.com/brendangregg/FlameGraph.git
+
+ENV PATH $PATH:/go/FlameGraph
+
+CMD ["go-torch"]
 ```
 
 
+
 ### flag
+
 - Package flag implements command-line flag parsing
 ```
 package main

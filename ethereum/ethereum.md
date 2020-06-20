@@ -11,6 +11,8 @@
 > 有官方go实现，cpp,pythen实现
 >
 > nodejs实现的web3.js库，文档：https://web3js.readthedocs.io/en/v1.2.6/
+>
+> 以太坊技术与实现：https://learnblockchain.cn/books/geth/part3/sign-and-valid.html
 
 ### 安装ethereum
 

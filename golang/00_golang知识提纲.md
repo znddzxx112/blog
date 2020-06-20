@@ -258,17 +258,18 @@ gotests -only "GetAudioPath" texttoaudio.go // 仅为GetAudioPath方法生成测
 ```
 
 - 官方mock工具gomock, 推荐使用 testify (https://github.com/stretchr/testify)
-```
+
 文档：https://godoc.org/github.com/golang/mock/gomock
 常用命令：
-mocgen -destination=textTask_mock.go texttoaudio/server/models TextTaskInf //为texttoaudio/server/models下的接口TextTaskInf 生成mock类
+mockgen -destination=registry_mock.go github.com/znddzxx112/go-did-vc/core Registry //为github.com/znddzxx112/go-did-vc/Registry 生成mock文件
+
+```
 mock出stuct的InfoTextTaskKeyStatus方法
 func TextTexttoaudio_GetAudioPath(t *testing.T) {
-   mockCtrl := gomock.NewController(t)
-   defer mockCtrl.Finish()
-
-   textTaskStuct := mock_models.NewMockTextTaskInf(mockCtrl)
-   textTaskStuct.EXPECT().InfoTextTaskKeyStatus(gomock.Any(),gomock.Any).Return(nil)
+     mockCtrl := gomock.NewController(t)
+	 defer mockCtrl.Finish()
+	 registry := mock_core.NewMockRegistry(mockCtrl)
+	 registry.EXPECT().Read(issuerDid).Return(mockDoc, nil)
 }
 ```
 
@@ -730,7 +731,7 @@ replace bad/thing v1.4.5 => good/thing v1.4.5
 >
 > https://cizixs.com/2017/09/11/profiling-golang-program/
 
-### cpu profile展示了函数在cpu的耗时占用情况
+#### cpu profile展示了函数在cpu的耗时占用情况
 
 #### 用http请求得到cpu profile文件-线上采用
 

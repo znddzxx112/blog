@@ -736,9 +736,32 @@ cpu可以直接读写的3个地方的数据
 ```
 Router>enable
 Router#config
-Configuring from terminal, memory, or network [terminal]? y
+Configuring from terminal, memory, or network [terminal]? terminal
 ?Must be "terminal", "memory" or "network"
 Router#disable
+```
+
+#### 问题：如何配置接口、子接口、路由选择协议？
+
+```
+Router# config t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#interface fastEthernet 0/0
+Router(config-if)#exit
+Router(config)#interface fastEthernet 0/0.1
+Router(config-subif)# exit
+Router(config)# router ospf
+```
+
+#### 问题：如何配置快速以太口，串口并启用、配置ip？
+
+```
+Router(config)#interface fastEthernet 0/1 插槽1
+Router(config-if)#no shutdown
+Router(config-if)#do show int f0/1
+Router(config)#interface s0/1/0 插槽1
+Router(config-if)#ip address 192.168.3.254 255.255.255.0
+Router(config-if)#do show int f0/1
 ```
 
 

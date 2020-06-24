@@ -118,6 +118,35 @@ export https_proxy=http://127.0.0.1:8118
 export ftp_proxy=http://127.0.0.1:8118
 ```
 
+### trojan
+
+#### trojan下载
+
+```bash
+https://github.com/trojan-gfw/trojan/releases 下载后修改config.json内容
+```
+
+#### privoxy代理http和https
+
+```bash
+$ sudo apt install privoxy
+$ vim /etc/privoxy/config
+listen-address 127.0.0.1:8118这一句，保证这一句没有注释，8118就是将来http代理要输入的端口
+搜索forward-socks5t,将forward-socks5t / 127.0.0.1:1085 . 此句的注释去掉（注意后面的点不要删了！）.
+1085 是 trojan提供的端口
+$ sudo privoxy --user privoxy /etc/privoxy/config
+```
+
+#### shell代理
+
+```bash
+export http_proxy=http://127.0.0.1:8118
+export https_proxy=http://127.0.0.1:8118
+export ftp_proxy=http://127.0.0.1:8118
+```
+
+
+
 #### 一个网卡配置虚拟ip
 
 > 参考文章：https://blog.csdn.net/turkeyzhou/article/details/16971225

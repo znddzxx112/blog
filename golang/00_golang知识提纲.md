@@ -1434,3 +1434,25 @@ func main(){
 >
 > 0x11(16进制) 0b10（2进制）‘z’ Ascall码
 
+#### golang程序使用静态链接
+
+如果代码中没有涉及cgo，在编译的结果中默认是静态链接
+
+比如
+
+```
+CGO_ENABLED=0  GOOS=linux GOARCH=amd64 go build  -o ./dist/did ./cmd/cli/main.go
+```
+
+但如果代码中有包含cgo，编译结果的可执行文件默认是动态链接。可通过ldd命令验证
+
+```golang
+ldd  xxx
+```
+
+如果代码中有包含cgo, 依旧想要实现静态链接，需要增加链接参数
+
+```
+CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags '-linkmode "external" -extldflags "-static"' -o ./dist/did-cli ./cmd/cli/main.go
+```
+

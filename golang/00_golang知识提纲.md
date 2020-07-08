@@ -1369,6 +1369,33 @@ go env -w GOPROXY="https://goproxy.cn,direct" // 使用国内代理  $GOPROXY = 
 go env -w GOPRIVATE=".github.com" 
 ```
 
+### 源码安装go1.14.4
+
+前提：已安装go.1.13.2， 下载go.1.14源码
+
+```bash
+$ wget <golang source>/dl/golang/go1.14.4.src.tar.gz
+$ tar -zxvf go1.14.4.src.tar.gz 
+$ mv go go1.14
+```
+
+设置GOROOT_BOOTSTRAP为go.13的GOROOT
+
+```bash
+$ echo $GOROOT
+$ export GOROOT_BOOTSTRAP=/home/znddzxx112/local/go/go1.13
+$ echo $GOROOT_BOOTSTRAP
+```
+
+编译go.1.14
+
+```bash
+$ cd src
+$ ./src/all.bash
+```
+
+
+
 ### parse与format时区问题
 
 #### time.Parse()使用的是默认时区UTC

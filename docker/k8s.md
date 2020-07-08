@@ -1,0 +1,157 @@
+### kubernetes
+
+> https://github.com/kubernetes/kubernetes
+
+源码分析：http://qiankunli.github.io/2018/12/31/kubernetes_source_kubelet.html
+
+
+
+### k8s搭建过程
+
+##### 1、关闭swap内存，注释文件/etc/fstab文件第二行，重启
+
+```
+vi /etc/fstab
+```
+
+
+
+##### 2、安装docker并修改docker配置（安装步骤省略）
+
+```
+vi /etc/docker/daemon.json
+```
+
+```
+{
+  "registry-mirrors": [
+    "https://dockerhub.azk8s.cn",
+    "https://reg-mirror.qiniu.com",
+    "https://quay-mirror.qiniu.com"
+  ],
+  "exec-opts": [ "native.cgroupdriver=systemd" ]
+}
+```
+
+```
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+##### 3、安装下载 k8s 的三个主要组件kubelet、kubeadm以及kubectl
+
+##### (各节点都要安装)
+
+```
+# 使得 apt 支持 ssl 传输
+apt-get update && apt-get install -y apt-transport-https
+# 下载 gpg 密钥
+curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add - 
+# 添加 k8s 镜像源
+cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF
+# 更新源列表
+apt-get update
+# 下载 kubectl，kubeadm以及 kubelet
+apt-get install -y kubelet kubeadm kubectl
+```
+
+
+
+##### 4、初始化master节点
+
+将赋值给`--apiserver-advertise-address`参数的 ip 地址修改为自己的`master`主机地址
+
+```
+kubeadm init \
+--apiserver-advertise-address=192.168.4.190 \
+--image-repository registry.aliyuncs.com/google_containers \
+--pod-network-cidr=10.244.0.0/16
+```
+
+当你看到如下字样是，就说明初始化成功了，**请把最后那行以`kubeadm join`开头的命令复制下来，之后安装工作节点时要用到的**，如果你不慎遗失了该命令，可以在`master`节点上使用`kubeadm token create --print-join-command`命令来重新生成一条。
+
+```
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.4.190:6443 --token 42dffa.2o0flyaqp1q4pzft \
+    --discovery-token-ca-cert-hash sha256:56909d5c480543c3293ab513caebe35a069e07a3b59a200a6a4d56229fc68f55
+```
+
+配置 kubectl 工具
+
+```
+mkdir -p /root/.kube && \
+cp /etc/kubernetes/admin.conf /root/.kube/config
+```
+
+执行完成后并不会刷新出什么信息，可以通过下面两条命令测试 `kubectl`是否可用：
+
+```
+# 查看已加入的节点
+kubectl get nodes
+# 查看集群状态
+kubectl get cs
+```
+
+部署flannel网络
+
+`flannel`是什么？它是一个专门为 k8s 设置的网络规划服务，可以让集群中的不同节点主机创建的 docker 容器都具有全集群唯一的虚拟IP地址。想要部署`flannel`的话直接执行下述命令即可：
+
+```
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml
+```
+
+部署失败，连接不上raw.githubusercontent.com
+
+```
+The connection to the server raw.githubusercontent.com was refused - did you specify the right host or port?
+```
+
+在/etc/hosts中添加一下内容
+
+```
+151.101.76.133 raw.githubusercontent.com
+```
+
+重新执行之后还是不行,换个链接执行
+
+```
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+```
+
+成功之后运行
+
+```
+systemctl daemon-reload
+```
+
+再查看master节点是否处于ready状态，如果是则完成
+
+```
+kubectl get nodes
+```
+
+k8s管理节点完成
+
+##### 5、将 slave 节点加入网络
+
+执行之前让保存的
+
+```
+kubeadm join 192.168.4.190:6443 --token 42dffa.2o0flyaqp1q4pzft \
+    --discovery-token-ca-cert-hash sha256:56909d5c480543c3293ab513caebe35a069e07a3b59a200a6a4d56229fc68f55
+```

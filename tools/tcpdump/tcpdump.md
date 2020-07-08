@@ -7,4 +7,5 @@ tcpdump分析tcp三次握手过程
 3. 选定协议：tcpdump tcp
 4. 常用命令：sudo tcpdump 'port 80 and host 10.10.80.214' -n -s 0 -w '/tmp/tcp.cap'
 5. 选定网卡对应的ip tcpdump host 192.168.20.215
+6. tcpdump -X -s 0 -iany -w  'port 80 and host 10.10.80.214'  '/tmp/tcp.cap'
 ```

@@ -169,7 +169,8 @@ rinkeby水龙头网站
 
 ```bash
 $ mkdir -p ~/data/eth-dev
-$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-dev --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --ws --wsaddr "0.0.0.0" --wsorigins="*"  --wsport 8546
+$ geth --dev --dev.period 0 --networkid=1444 --datadir ~/data/eth-dev --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --ws --wsaddr "0.0.0.0" --wsorigins="*"  --wsport 8546 --rpcapi web3,eth,debug,personal,net --vmdebug --rpccorsdomain="http://127.0.0.1:8080" --allow-insecure-unlock --unlock "0xec44cfa70aedf56a9b65e4f7d092567671d3b618"
+
 
 ```
 
@@ -893,6 +894,17 @@ usdt代币的合约 https://cn.etherscan.com/address/0xdac17f958d2ee523a22062069
 >  2.编译已写好的智能合约
 >  3.将编译好的智能合约部署到节点网络（这一步会消耗以太币，还需要使用你的节点的默认地址或者指定地址来给合约签名。） => 获得合约地址
 >  4.用web3.js提供的JavaScript API来调用合约
+
+#### 推荐使用remix-ide完成编写和部署过程
+
+```
+docker pull remixproject/remix-ide:latest
+docker run -p 8080:80 -d remix-ide --name remixproject/remix-ide:latest
+```
+
+本地节点需要加上这几个配置项
+
+> geth --rpc --rpcapi web3,eth,debug,personal,net --vmdebug --rpccorsdomain="http://127.0.0.1:8080"
 
 #### 安装Solidity编译器Solc
 

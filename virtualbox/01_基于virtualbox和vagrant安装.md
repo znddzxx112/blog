@@ -40,11 +40,11 @@ $ chmod 640 .ssh/authorized_keys
 
 本机2222-》22
 
-![v2](C:\Users\86188\workspace\znddzxx112\blog\virtualbox\v2.jpg)
+![v2](.\v2.jpg)
 
 网卡2设置
 
-![v3](C:\Users\86188\workspace\znddzxx112\blog\virtualbox\v3.jpg)
+![v3](.\v3.jpg)
 
 ##### 通过xshell登录虚拟机
 

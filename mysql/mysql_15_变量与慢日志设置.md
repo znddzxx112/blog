@@ -525,3 +525,18 @@ version_compile_os	Win64
 wait_timeout	28800
 warning_count	1
 ```
+
+### percona-toolkit安装
+
+#### 下载
+
+```bash
+$ docker pull 3laho3y3.mirror.aliyuncs.com/perconalab/percona-toolkit
+```
+
+#### 使用
+
+```bash
+docker run --user=root -v /var/log/mysql/mysql-slow.log:/mysql-slow.log --rm perconalab/percona-toolkit:latest pt-query-digest /mysql-slow.log >> pt/slow.log
+```
+

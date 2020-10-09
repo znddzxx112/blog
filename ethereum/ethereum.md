@@ -902,6 +902,8 @@ docker pull remixproject/remix-ide:latest
 docker run -p 8080:80 -d remix-ide --name remixproject/remix-ide:latest
 ```
 
+浏览器打开 http://127.0.0.1:8080
+
 本地节点需要加上这几个配置项
 
 > geth --rpc --rpcapi web3,eth,debug,personal,net --vmdebug --rpccorsdomain="http://127.0.0.1:8080"

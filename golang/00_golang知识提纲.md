@@ -1503,3 +1503,16 @@ $ go mod init github.com/znddzxx112/backend_
 
 ```
 
+### Go变量逃逸分析
+
+参考文章 https://www.cnblogs.com/itbsl/p/10476674.html
+
+变量应该分配在堆上还是栈上的问题
+
+golang通过编译器来决定变量分配位置。
+
+规则：在一个函数结束后，返回指针，一般分配在堆上
+
+查看：go build -gcbuild '-m' main.go
+
+newobject 分配在堆上  push 分配在栈上

@@ -1,8 +1,64 @@
+
+
+[TOC]
+
+
+
 ### kubernetes
 
 > https://github.com/kubernetes/kubernetes
 
 源码分析：http://qiankunli.github.io/2018/12/31/kubernetes_source_kubelet.html
+
+
+
+### minikube搭建单机k8s
+
+#### docker镜像源
+
+```bash
+cat /etc/docker/daemon.json 
+{
+	  "registry-mirrors": ["https://docker.mirrors.ustc.edu.cn"]
+}
+
+```
+
+
+
+#### kubectl命令安装
+
+可以从kubernetes库上直接下载，方法如下：
+
+step 1: 访问官方github网址：https://github.com/kubernetes/kubernetes/releases
+
+step 2: 找到想使用的发布版本，在每个发布版本的最后一行有类似“CHANGELOG-1.10.md”这样的内容，点击超链进入；
+
+step 3: 然后进入“Client Binaries”区域；
+
+step 4: 选择和目标机器系统匹配的二进制包下载；
+
+step 5: 解压缩，放入/usr/local/bin目录；
+
+https://github.com/kubernetes/kubernetes/releases
+
+
+
+#### minikube安装
+
+https://github.com/kubernetes/minikube/releases/tag/v1.14.1
+
+##### 使用非root用户但在docker组成员启动minikube：
+
+```bash
+$ minikube start --cpus=2 --memory=2048mb --driver=docker --registry-mirror=https://registry.docker-cn.com
+```
+
+##### minikube 关闭
+
+```bash
+$ minikube stop
+```
 
 
 
@@ -155,3 +211,78 @@ k8s管理节点完成
 kubeadm join 192.168.4.190:6443 --token 42dffa.2o0flyaqp1q4pzft \
     --discovery-token-ca-cert-hash sha256:56909d5c480543c3293ab513caebe35a069e07a3b59a200a6a4d56229fc68f55
 ```
+
+
+
+### 资源文件模板
+
+#### 创建Pod
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+        name: nginx
+        labels:
+            app: nginx
+            io.ckl: nginx
+spec:
+        containers:
+                - name: io-ckl-nginx
+                  image: nginx:latest
+                  ports:
+                         - containerPort: 80
+                  imagePullPolicy: IfNotPresent
+```
+
+
+
+#### 创建Deployment
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+        name: nginx-deployment
+        labels:
+            io.ckl: nginx-deployment
+spec:
+        replicas: 3
+        selector:
+            matchLabels:
+              app: nginx
+              io.ckl: nginx        
+        template:
+            metadata:
+              labels:
+                 app: nginx
+                 io.ckl: nginx
+            spec:
+               containers:
+                       - name: nginx
+                         image: nginx:latest
+                         imagePullPolicy: IfNotPresent
+                         ports:
+                                 - containerPort: 80
+```
+
+
+
+#### 创建Service-nodeport
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+        name: nginx-service-nodeport
+spec:
+        selector:
+                app: nginx
+        ports:
+               - name: http
+                 port: 8080
+                 targetPort: 80
+
+        type: NodePort
+```
+

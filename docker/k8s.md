@@ -286,3 +286,113 @@ spec:
         type: NodePort
 ```
 
+
+
+#### 创建mysql服务-service、deployment、pv、pvc
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hto-common-mysql-pv
+  labels:
+    type: hto-common-mysql-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  local:
+    path: /home/znddzxx112/data/hto-common-mysql
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: name
+          operator: In
+          values:
+          - hto-common-mysql
+----
+apiVersion:  v1
+kind: PersistentVolumeClaim
+metadata: 
+  name: hto-common-mysql-pvc
+spec: 
+  accessModes: 
+    - ReadWriteOnce          
+  resources: 
+    requests: 
+      storage: 200Mi   
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: hto-common-mysql
+spec: 
+  selector: 
+    matchLabels: 
+      app: hto-common-mysql
+  template: 
+    metadata: 
+      labels: 
+        app: hto-common-mysql
+    spec: 
+      containers: 
+      - name: hto-common-mysql 
+        image: mysql:5.7
+        imagePullPolicy: IfNotPresent
+        env:           
+        - name: MYSQL_ROOT_PASSWORD
+          value: hto123
+        ports: 
+        - containerPort: 3306
+        volumeMounts: 
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql                 
+      volumes: 
+      - name: mysql-persistent-storage
+        persistentVolumeClaim: 
+          claimName: hto-common-mysql-pvc           
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: hto-common-mysql-svc
+spec: 
+  type: NodePort
+  ports: 
+  - port: 3306
+    targetPort: 3306
+  selector: 
+    app: hto-common-mysql
+```
+
+#### 部署busybox用来调试
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: hto-common-busybox
+spec: 
+  selector: 
+    matchLabels: 
+      app: hto-common-busybox
+  template: 
+    metadata: 
+      labels: 
+        app: hto-common-busybox
+    spec: 
+      containers: 
+      - name: hto-common-busybox 
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - tail 
+        - "-f" 
+        - "/etc/hosts"
+```
+

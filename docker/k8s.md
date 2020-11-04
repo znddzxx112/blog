@@ -214,6 +214,120 @@ kubeadm join 192.168.4.190:6443 --token 42dffa.2o0flyaqp1q4pzft \
 
 
 
+### kubectl-debug
+
+#### 安装kubectl-debug
+
+```bash
+export PLUGIN_VERSION=0.1.1
+# linux x86_64
+curl -Lo kubectl-debug.tar.gz https://github.com/aylei/kubectl-debug/releases/download/v${PLUGIN_VERSION}/kubectl-debug_${PLUGIN_VERSION}_linux_amd64.tar.gz
+# macos
+curl -Lo kubectl-debug.tar.gz https://github.com/aylei/kubectl-debug/releases/download/v${PLUGIN_VERSION}/kubectl-debug_${PLUGIN_VERSION}_darwin_amd64.tar.gz
+
+tar -zxvf kubectl-debug.tar.gz kubectl-debug
+sudo mv kubectl-debug /usr/local/bin/
+```
+
+#### 创建debug-agent的DaemonSet
+
+kubectl create -f kubectl-debug-agent.yaml
+
+kubectl-debug-agent.yaml
+
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: debug-agent
+  name: debug-agent
+spec:
+  selector:
+    matchLabels:
+      app: debug-agent
+  template:
+    metadata:
+      labels:
+        app: debug-agent
+    spec:
+      hostPID: true
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      containers:
+        - name: debug-agent
+          image: aylei/debug-agent:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 10027
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          ports:
+            - containerPort: 10027
+              hostPort: 10027
+              name: http
+              protocol: TCP
+          volumeMounts:
+            - name: cgroup
+              mountPath: /sys/fs/cgroup
+            - name: lxcfs
+              mountPath: /var/lib/lxc
+              mountPropagation: Bidirectional
+            - name: docker
+              mountPath: "/var/run/docker.sock"
+            - name: runcontainerd
+              mountPath: "/run/containerd"
+            - name: runrunc
+              mountPath: "/run/runc"
+            - name: vardata
+              mountPath: "/var/data"
+      # hostNetwork: true
+      volumes:
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+        - name: lxcfs
+          hostPath:
+            path: /var/lib/lxc
+            type: DirectoryOrCreate
+        - name: docker
+          hostPath:
+            path: /var/run/docker.sock
+        # containerd client will need to access /var/data, /run/containerd and /run/runc
+        - name: vardata
+          hostPath:
+            path: /var/data
+        - name: runcontainerd
+          hostPath:
+            path: /run/containerd
+        - name: runrunc
+          hostPath:
+            path: /run/runc
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 5
+    type: RollingUpdate
+```
+
+#### 调试操作
+
+```bash
+$ kubectl-debug ${pod-name}
+```
+
+
+
+
+
 ### 资源文件模板
 
 #### 创建Pod

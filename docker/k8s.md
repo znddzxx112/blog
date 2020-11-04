@@ -370,7 +370,39 @@ spec:
     app: hto-common-mysql
 ```
 
-#### 部署busybox用来调试
+#### configmap
+
+用于环境变量
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hto-config-env
+data:
+  port: "7680"
+  configPath: ./conf/config.yaml
+```
+
+用于配置文件
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hto-config-file
+data:
+  config.yaml: |
+    debug: true
+    qqwry_path: ./conf/ip/qqwry.dat
+    resource_init_submit: false
+```
+
+
+
+#### 部署busybox
+
+使用环境变量和配置文件
 
 ```yaml
 apiVersion: apps/v1
@@ -394,5 +426,18 @@ spec:
         - tail 
         - "-f" 
         - "/etc/hosts"
+        envFrom:
+            - configMapRef:
+                name: hto-config-env
+          volumeMounts:
+            - name: hto-config-file
+              mountPath: /app/conf
+      volumes:
+        - name: hto-config-file
+          configMap:
+            name: hto-config-file
+            items:
+              - key: config.yaml
+                path: config.yaml
 ```
 

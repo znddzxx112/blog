@@ -81,7 +81,17 @@ eg:
 $ sudo docker images
 $ sudo docker build -t [name] .
 ```
+#### 镜像导出与导入
+
+```bash
+$ docker save -o hto-gateway.tar hto-gateway:latest
+$ docker load --input hto-gateway.tar
+```
+
+
+
 #### 其他命令
+
 docker [info|version]
 #### 变迁图
 ![](https://sfault-image.b0.upaiyun.com/404/256/404256463-545a1d114c535_articlex)

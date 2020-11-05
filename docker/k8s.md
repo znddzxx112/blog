@@ -212,6 +212,91 @@ kubeadm join 192.168.4.190:6443 --token 42dffa.2o0flyaqp1q4pzft \
     --discovery-token-ca-cert-hash sha256:56909d5c480543c3293ab513caebe35a069e07a3b59a200a6a4d56229fc68f55
 ```
 
+### kubernetes-dashboard
+
+参考文章：
+0、 https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/
+1、 https://www.cnblogs.com/RainingNight/p/deploying-k8s-dashboard-ui.html
+2、 https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
+
+#### 安装dashboard
+
+下载kubernetes-dashboard.yaml
+https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+防止镜像重复拉取，对文件做修改：containers下修改了imagePullPolicy: IfNotPresent
+
+docker pull kubernetesui/metrics-scraper:v1.0.4
+
+docker pull kubernetesui/dashboard:v2.0.0
+
+kubectl create -f kubernetes-dashboard.yaml
+
+#### 访问dashboard
+
+1、 生成p12
+首先找到kubectl命令的配置文件，默认情况下为/etc/kubernetes/admin.conf，复制到了$HOME/.kube/config中。
+然后我们使用client-certificate-data和client-key-data生成一个p12文件，可使用下列命令：
+
+生成client-certificate-data
+
+grep 'client-certificate-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d >> kubecfg.crt
+
+生成client-key-data
+
+grep 'client-key-data' ~/.kube/config | head -n 1 | awk '{print $2}' | base64 -d >> kubecfg.key
+
+1、生成p12
+
+openssl pkcs12 -export -clcerts -inkey kubecfg.key -in kubecfg.crt -out kubecfg.p12 -name "kubernetes-client"
+
+2、 导入证书
+设置->安全->管理htpps/ssl证书和设置
+
+3、 获取kubernetes-dashboard用户token
+
+kubectl get secret --namespace=kubernetes-dashboard
+
+kubectl describe secret kubernetes-dashboard-token-xtg7t -n kubernetes-dashboard
+
+4、浏览器访问并填写token：https://[master-ip]:6443/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+5、 创建管理员用户
+
+kubectl create -f k8s-admin-user.yaml
+
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+```
+
+6. 获得管理员token
+
+kubectl get secret -n kubernetes-dashboard
+
+kubectl describe  secret admin-user-token-2cmj2 -n kubernetes-dashboard
+
+或者
+
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+
+
+
 
 
 ### kubectl-debug

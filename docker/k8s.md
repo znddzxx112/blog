@@ -110,7 +110,15 @@ EOF
 # 更新源列表
 apt-get update
 # 下载 kubectl，kubeadm以及 kubelet
-apt-get install -y kubelet kubeadm kubectl
+apt-get install -y kubelet=1.19.0-00  kubeadm=1.19.0-00  kubectl=1.19.0-00 
+```
+
+查看软件版本和安装
+
+```
+# apt-cache madison kubelet
+# apt-get install kubelet=1.19.0-00
+
 ```
 
 
@@ -123,6 +131,7 @@ apt-get install -y kubelet kubeadm kubectl
 kubeadm init \
 --apiserver-advertise-address=192.168.4.190 \
 --image-repository registry.aliyuncs.com/google_containers \
+--kubernetes-version=v1.19.0 \
 --pod-network-cidr=10.244.0.0/16
 ```
 
@@ -168,7 +177,7 @@ kubectl get cs
 `flannel`是什么？它是一个专门为 k8s 设置的网络规划服务，可以让集群中的不同节点主机创建的 docker 容器都具有全集群唯一的虚拟IP地址。想要部署`flannel`的话直接执行下述命令即可：
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml
+查看：https://github.com/coreos/flannel
 ```
 
 部署失败，连接不上raw.githubusercontent.com
@@ -211,6 +220,16 @@ k8s管理节点完成
 kubeadm join 192.168.4.190:6443 --token 42dffa.2o0flyaqp1q4pzft \
     --discovery-token-ca-cert-hash sha256:56909d5c480543c3293ab513caebe35a069e07a3b59a200a6a4d56229fc68f55
 ```
+
+##### 6、注释掉scheduler和controller的健康检查
+
+```bash
+vim /etc/kubernetes/manifests/kube-controller-manager.yaml
+vim /etc/kubernetes/manifests/kube-scheduler.yaml
+注释掉 - --port=0
+```
+
+
 
 ### prometheus-grafana
 
@@ -1183,5 +1202,43 @@ spec:
             items:
               - key: config.yaml
                 path: config.yaml
+```
+
+#### 创建cronjob定时任务
+
+```bash
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: backend-mrds
+  namespace: mrds
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cronjob
+              image: {{image}}
+              imagePullPolicy: IfNotPresent
+              command: ["./m", "--task="]
+              workingDir: /app
+              ports:
+                - containerPort: 7681
+              envFrom:
+                - configMapRef:
+                    name: mrds-cm
+              volumeMounts:
+                - name: mrds-cm
+                  mountPath: /app/conf
+          restartPolicy: OnFailure
+          volumes:
+            - name: mrds-cm
+              configMap:
+                name: mrds-cm
+                items:
+                  - key: config.yaml
+                    path: config.yaml
 ```
 

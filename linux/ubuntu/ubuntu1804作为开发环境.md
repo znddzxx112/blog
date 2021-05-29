@@ -87,6 +87,14 @@ $ sudo apt install git
 >
 > git config --local user.name "znddzxx112"
 
+##### Beekeeper Studo
+
+> snap install Beekeeper
+
+##### RDM
+
+> snap install redis-desktop-manager
+
 ##### synergy
 
 > 安装鼠标键盘共享软件
@@ -117,6 +125,14 @@ $ tar -xjvf sublime_text_3_build_3211_x64.tar.bz2 -C ~/local/
 $ ln -s /home/znddzxx112/local/sublime_text_3/sublime_text /home/znddzxx112/bin/
 $ sublime
 ```
+
+##### robo 3t
+
+> https://robomongo.org/download
+>
+> mv robo3t-1.4.3-linux-x86_64-48f7dfd ~/local/robo3t
+>
+> ln -s ~/local/robo3t/bin/robo3t ~/bin/
 
 ##### krakan
 
@@ -229,14 +245,35 @@ $ git clone ssh://git@gitlab.localhost.com:8022/root/zero_documents.git
 > 安装包可下载或者从移动硬盘同步而来
 >
 > 安装在local/go/go1.13下
+>
+> 下载地址：https://golang.google.cn/dl/
 
 ```bash
+$ mkdir -p ~/local/gopath
 $ vi .profile
-export GOPATH=$HOME/gopath
-export GOROOT=$HOME/local/go/go1.13
+export GOPATH=$HOME/local/gopath
+export GOROOT=$HOME/local/go1.13
 export GOBIN=$GOROOT/bin
 export PATH=$GOBIN:$PATH
 ```
+
+设置代理
+
+> https://goproxy.cn/
+>
+> $ echo "export GO111MODULE=on" >> ~/.profile 
+>
+> $ echo "export GOPROXY=https://goproxy.cn" >> ~/.profile $ source ~/.profile
+
+##### IntelliJ IDEA
+
+> 下载toolbox
+>
+> https://www.jetbrains.com/zh-cn/toolbox-app/
+>
+> 随后安装golang 插件
+>
+> https://www.cnblogs.com/chenfool/p/8514000.html
 
 ##### Phpstorm
 
@@ -275,7 +312,7 @@ export PATH=$GOBIN:$PATH
 >
 > 可以使用Goland的setting
 
-Clion
+##### Clion
 
 > 安装包可下载或者从移动硬盘同步而来
 >
@@ -284,6 +321,16 @@ Clion
 > cd ~/local/clion-2019.3.5
 >
 > bin/clion.sh 
+
+##### meld
+
+> apt-get install meld
+
+
+
+##### bcompare
+
+> https://www.scootersoftware.com/download.php
 
 #### 家目录下文件夹释义
 

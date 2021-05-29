@@ -86,6 +86,8 @@ $ sudo apt install git
 > git config --local user.email "znddzxx112@163.com"
 >
 > git config --local user.name "znddzxx112"
+>
+> git config --global core.editor "vim"
 
 ##### Beekeeper Studo
 

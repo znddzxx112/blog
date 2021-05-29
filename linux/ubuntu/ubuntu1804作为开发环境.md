@@ -100,6 +100,10 @@ $ sudo apt install git
 ##### synergy
 
 > 安装鼠标键盘共享软件
+>
+> https://pkgs.org/search/?q=synergy 下载deb
+>
+> https://www.jianshu.com/p/a706d2ece694
 
 ```bash
 $ sudo apt install synergy
@@ -226,6 +230,8 @@ cd ~/local/xmind8/XMind_amd64 && ./XMind &
 
 ```bash
 $ sudo usermod -aG docker your_username
+$ newgrp docker
+$ docker info
 ```
 
 ##### blog项目

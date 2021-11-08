@@ -127,10 +127,54 @@ $ ln -s ~/local/postman/Postman ~/bin
 > https://www.sublimetext.com/3
 
 ```bash
+https://sublimetextcn.com/
+或者
+https://www.sublimetext.com/3
+下载deb
+```
+
+
+
+```bash
+$ sudo snap install sublime-text --classic
+```
+
+```bash
 $ tar -xjvf sublime_text_3_build_3211_x64.tar.bz2 -C ~/local/
 $ ln -s /home/znddzxx112/local/sublime_text_3/sublime_text /home/znddzxx112/bin/
 $ sublime
 ```
+
+##### qv2ray
+
+> https://wkzqn.gitee.io/2020/11/15/Ubuntu%E4%B8%ADv2ray%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE/
+
+```
+sudo snap install qv2ray
+cd ~/snap/qv2ray/3384/.config/qv2ray  #在首选项-->内核设置中看到路径
+wget https://github.com/v2ray/v2ray-core/releases/download/v4.28.2/v2ray-linux-64.zip
+unzip v2ray-linux-64.zip  -d vcore
+
+```
+
+```bash
+vim .profile
+export http_proxy=http://127.0.0.1:8889
+export https_proxy=http://127.0.0.1:8889
+export ftp_proxy=http://127.0.0.1:8889
+```
+
+##### wps
+
+> https://www.wps.cn/product/wpslinux#
+>
+> $ sudo dpkg -i wps-office_11.1.0.10161_amd64.deb
+
+##### remmina
+
+> window和linux远程连接
+>
+> https://blog.csdn.net/weixin_43223076/article/details/88543321
 
 ##### robo 3t
 
@@ -214,6 +258,12 @@ $ vi ~/bin/XMind.sh
 cd ~/local/xmind8/XMind_amd64 && ./XMind &
 ```
 
+```bash
+$ snap install xmind
+```
+
+
+
 ##### docker
 
 > 针对ubuntu有好几种安装方式，选择软件源安装方式
@@ -282,6 +332,16 @@ export PATH=$GOBIN:$PATH
 > 随后安装golang 插件
 >
 > https://www.cnblogs.com/chenfool/p/8514000.html
+
+##### java
+
+> https://blog.csdn.net/fenglllle/article/details/84962855
+>
+> openjdk下载
+>
+> https://www.openlogic.com/openjdk-downloads
+>
+> 
 
 ##### Phpstorm
 

@@ -192,6 +192,18 @@ $ vi ~/bin/XMind.sh
 cd ~/local/xmind8/XMind_amd64 && ./XMind &
 ```
 
+##### wireshark
+
+> apt-get install wireshark
+
+##### rdm
+
+> snap install redis-destop-manager
+
+##### beekeeper
+
+##### kreya
+
 ##### docker
 
 > 针对ubuntu有好几种安装方式，选择软件源安装方式

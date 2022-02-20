@@ -4,6 +4,14 @@
 
 #### 源码阅读辅助工具
 
+参考文章：
+
+https://github.com/ZtesoftCS/go-ethereum-code-analysis/blob/master/README.md
+
+参考视频：
+
+
+
 golang源码查看工具
 
 > https://github.com/ofabry/go-callvis

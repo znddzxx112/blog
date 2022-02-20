@@ -86,10 +86,24 @@ $ sudo apt install git
 > git config --local user.email "znddzxx112@163.com"
 >
 > git config --local user.name "znddzxx112"
+>
+> git config --global core.editor "vim"
+
+##### Beekeeper Studo
+
+> snap install Beekeeper
+
+##### RDM
+
+> snap install redis-desktop-manager
 
 ##### synergy
 
 > 安装鼠标键盘共享软件
+>
+> https://pkgs.org/search/?q=synergy 下载deb
+>
+> https://www.jianshu.com/p/a706d2ece694
 
 ```bash
 $ sudo apt install synergy
@@ -113,10 +127,62 @@ $ ln -s ~/local/postman/Postman ~/bin
 > https://www.sublimetext.com/3
 
 ```bash
+https://sublimetextcn.com/
+或者
+https://www.sublimetext.com/3
+下载deb
+```
+
+
+
+```bash
+$ sudo snap install sublime-text --classic
+```
+
+```bash
 $ tar -xjvf sublime_text_3_build_3211_x64.tar.bz2 -C ~/local/
 $ ln -s /home/znddzxx112/local/sublime_text_3/sublime_text /home/znddzxx112/bin/
 $ sublime
 ```
+
+##### qv2ray
+
+> https://wkzqn.gitee.io/2020/11/15/Ubuntu%E4%B8%ADv2ray%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE/
+
+```
+sudo snap install qv2ray
+cd ~/snap/qv2ray/3384/.config/qv2ray  #在首选项-->内核设置中看到路径
+wget https://github.com/v2ray/v2ray-core/releases/download/v4.28.2/v2ray-linux-64.zip
+unzip v2ray-linux-64.zip  -d vcore
+
+```
+
+```bash
+vim .profile
+export http_proxy=http://127.0.0.1:8889
+export https_proxy=http://127.0.0.1:8889
+export ftp_proxy=http://127.0.0.1:8889
+```
+
+##### wps
+
+> https://www.wps.cn/product/wpslinux#
+>
+> $ sudo dpkg -i wps-office_11.1.0.10161_amd64.deb
+
+##### remmina
+
+> window和linux远程连接
+>
+> https://blog.csdn.net/weixin_43223076/article/details/88543321
+
+##### robo 3t
+
+> https://robomongo.org/download
+>
+> mv robo3t-1.4.3-linux-x86_64-48f7dfd ~/local/robo3t
+>
+> ln -s ~/local/robo3t/bin/robo3t ~/bin/
 
 ##### krakan
 
@@ -192,6 +258,7 @@ $ vi ~/bin/XMind.sh
 cd ~/local/xmind8/XMind_amd64 && ./XMind &
 ```
 
+<<<<<<< HEAD
 ##### wireshark
 
 > apt-get install wireshark
@@ -203,6 +270,13 @@ cd ~/local/xmind8/XMind_amd64 && ./XMind &
 ##### beekeeper
 
 ##### kreya
+=======
+```bash
+$ snap install xmind
+```
+
+
+>>>>>>> c0f10aab6cb1710651cf8e3d2c041b38229be668
 
 ##### docker
 
@@ -220,6 +294,8 @@ cd ~/local/xmind8/XMind_amd64 && ./XMind &
 
 ```bash
 $ sudo usermod -aG docker your_username
+$ newgrp docker
+$ docker info
 ```
 
 ##### blog项目
@@ -241,14 +317,45 @@ $ git clone ssh://git@gitlab.localhost.com:8022/root/zero_documents.git
 > 安装包可下载或者从移动硬盘同步而来
 >
 > 安装在local/go/go1.13下
+>
+> 下载地址：https://golang.google.cn/dl/
 
 ```bash
+$ mkdir -p ~/local/gopath
 $ vi .profile
-export GOPATH=$HOME/gopath
-export GOROOT=$HOME/local/go/go1.13
+export GOPATH=$HOME/local/gopath
+export GOROOT=$HOME/local/go1.13
 export GOBIN=$GOROOT/bin
 export PATH=$GOBIN:$PATH
 ```
+
+设置代理
+
+> https://goproxy.cn/
+>
+> $ echo "export GO111MODULE=on" >> ~/.profile 
+>
+> $ echo "export GOPROXY=https://goproxy.cn" >> ~/.profile $ source ~/.profile
+
+##### IntelliJ IDEA
+
+> 下载toolbox
+>
+> https://www.jetbrains.com/zh-cn/toolbox-app/
+>
+> 随后安装golang 插件
+>
+> https://www.cnblogs.com/chenfool/p/8514000.html
+
+##### java
+
+> https://blog.csdn.net/fenglllle/article/details/84962855
+>
+> openjdk下载
+>
+> https://www.openlogic.com/openjdk-downloads
+>
+> 
 
 ##### Phpstorm
 
@@ -287,7 +394,7 @@ export PATH=$GOBIN:$PATH
 >
 > 可以使用Goland的setting
 
-Clion
+##### Clion
 
 > 安装包可下载或者从移动硬盘同步而来
 >
@@ -296,6 +403,16 @@ Clion
 > cd ~/local/clion-2019.3.5
 >
 > bin/clion.sh 
+
+##### meld
+
+> apt-get install meld
+
+
+
+##### bcompare
+
+> https://www.scootersoftware.com/download.php
 
 #### 家目录下文件夹释义
 

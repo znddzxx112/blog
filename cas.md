@@ -2,6 +2,16 @@
 
 
 
+#### 单点登录
+
+单点登录是一种思想、技术目标
+
+cas()
+
+可以使用Oauth2.0实现单点登录
+
+
+
 解释cas的文章：
 
 https://www.jianshu.com/p/8daeb20abb84

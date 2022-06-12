@@ -23,6 +23,7 @@ $ tar -xJf node-v12.16.1-linux-x64.tar.xz -C ~/local/
 $ vi ~/.profile
 export NODEBIN=/home/znddzxx112/local/node-v12.16.1-linux-x64/bin
 export PATH=$NODEBIN:$PATH
+$ npm config set registry https://registry.npmmirror.com
 ```
 
 #### yarn

@@ -1369,6 +1369,30 @@ go env -w GOPROXY="https://goproxy.cn,direct" // 使用国内代理  $GOPROXY = 
 go env -w GOPRIVATE=".github.com" 
 ```
 
+### update-golang管理升级
+```
+git clone https://github.com/udhos/update-golang
+cd update-golang
+sudo ./update-golang.sh
+修改环境变量
+export RELEASE_LIST=https://golang.google.cn/doc/devel/release
+export SOURCE=https://storage.googleapis.com/golang
+export DESTINATION=/home/znddzxx112/local
+export RELEASE=1.16
+export OS=linux
+export ARCH_PROBE='uname -m'
+export ARCH=amd64
+export PROFILED=/home/znddzxx112/profile.d/golang_path.sh
+export CACHE=/home/znddzxx112/local
+export GOPATH=/home/znddzxx112/gopath
+. /home/znddzxx112/profile.d/golang_path.sh
+
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+export GOPROXY=https://goproxy.cn,direct
+
+```
+
+
 ### 源码安装go1.14.4
 
 前提：已安装go.1.13.2， 下载go.1.14源码

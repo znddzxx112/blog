@@ -19,7 +19,7 @@ InnoDB、BDB、MEMORY 等）对每个表至少支持 16 个索引，总索引长
 
 > 什么情况下会使用索引
 ```
-where后面 = > < >= <= like 'a%'不以%开头
+where后面 = > < >= <= like 'a%'不以%开头， or 也会使用索引，or列为索引列
 index(a,b)建立组合索引，mysql实际创建二个索引（a,b）(a)， 也就是说 where a=,b= where a=都会使用这个索引，但where b=不会
 ```
 

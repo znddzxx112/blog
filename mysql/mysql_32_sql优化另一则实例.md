@@ -17,3 +17,9 @@ pt-query-digest --user=/xxxx/mysql-slow.log > /tmp/slow.txt
  每行超过6K，每次返回12G，每次执行对数据库，网络带宽压力都很大，执行的快慢取决于硬盘读写能力和网络带宽传输能力。
  优化策略：应用缓存+增量更新+只返回要用到的字段。
  ```
+
+- MySQL插入数据很慢优化
+一开始几百条记录TPS
+加大mysql配置中的bulk_insert_buffer_size，这个参数默认为8M
+set bulk_insert_buffer_size = 100 * 1024 * 1024;
+修改该条记录有助于千万级别数据批量插入。

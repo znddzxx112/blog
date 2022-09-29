@@ -954,6 +954,7 @@ b+tree索引带数据不需要回标，聚餐索引。innodb支持行锁，有�
 innodb的辅助索引记录的是主键id，查本身的索引b+tree得到主键id，再去主键索引b+tree树获得数据。
 联合索引的存储结构参考https://blog.csdn.net/weixin_30531261/article/details/79329722
 3.1 b+树非叶子节点保留指针、索引值，叶子节点保留数据、整行数据、数据块地址+行号
+3.2 innodb使用聚餐索引。聚餐索引：主键索引树保存在内存中，同时会将叶子节点保存着数据，可以不用去磁盘查找。myisam没有使用聚餐索引，需要去磁盘查
 
 Hash 索引在计算 Hash 值的时候是组合索引键合并后再一起计算 Hash 值，而不是单独计算 Hash 值，所以通过组合索引的前面一个或几个索引键进行查询的时候，Hash 索引也无法被利用。索引的检索可以一次定位，不像B-Tree 索引需要从根节点到枝节点.
 
@@ -965,10 +966,11 @@ innodb 是mysql5.5以后默认存储引擎，使用场景
 4).数据一致性要求很高的业务.如:转账,充值等.
 5).硬件设备内存较大,可以很好利用InnoDB较好的缓存能力来提高内存利用率,尽可能减少磁盘IO的开销.
 
+
 4. 索引最左原则
-4.1 or是不走索引，会破坏索引
+4.1 or左右二边字段都是索引列会走索引
 4.2 like 不以%开头的话，会使用索引
-大表分页的limit问题
+大表分页的limit问题：获取select max(1)获取
 使用子查询或者where id
 行锁颗粒小，但是维护成本高，大量写入时，选用表锁
 5. 什么样的列适合做为索引列，高区分度
@@ -1020,14 +1022,38 @@ Extra：
 
 14. 乐观锁与悲观锁
 乐观锁：
-使用数据版本（Version）记录机制实现，即为数据增加一个版本标识，一般是通过为数据库表增加一个数字类型的 “version” 字段来实现。先查询，更新update，where条件增加一个version字段
+使用数据版本（Version）记录机制实现，即为数据增加一个版本标识，一般是通过为数据库表增加一个数字类型的 “version” 字段来实现。先查询，更新update把version+1，作为where条件。
+另一种做法增加时间字段timestamp来实现先查询，更新update把timestamp字段作为where条件。
+where条件不满足就不会更新。
 update set where version=
 悲观锁：（行锁）
 悲观锁分二种：
 共享锁：
 	select * lock in share mode 获取锁，再操作
-排他锁：
+排他锁
 	select for update 获取锁，再更新
+
+
+15、解决问题：分库分表分布式主键id自增解决办法
+1、基于数据库的实现方案
+适合的场景：你分库分表就俩原因，要不就是单库并发太高，要不就是单库数据量太大；
+除非是你并发不高，但是数据量太大导致的分库分表扩容，你可以用这个方案，
+因为可能每秒最高并发最多就几百，那么就走单独的一个库和表生成自增主键即可。
+
+2、uuid
+UUID 太长了、占用空间大，作为主键性能太差了
+
+3、snowflake 算法
+了解了雪花算法的主键 ID 组成后不难发现，这是一种严重依赖于服务器时间的算法，而依赖服务器时间的就会遇到一个棘手的问题：时钟回拨
+雪花算法如何解决时钟回拨
+
+服务器时钟回拨会导致产生重复的 ID，SNOWFLAKE 方案中对原有雪花算法做了改进，增加了一个最大容忍的时钟回拨毫秒数。
+
+如果时钟回拨的时间超过最大容忍的毫秒数阈值，则程序直接报错；如果在可容忍的范围内，默认分布式主键生成器，会等待时钟同步到最后一次主键生成的时间后再继续工作。
+
+最大容忍的时钟回拨毫秒数，默认值为 0，可通过属性 max.tolerate.time.difference.milliseconds 设置。
+
+16、分库分表采用主键作为range
 ```
 
 - redis
@@ -1035,7 +1061,27 @@ update set where version=
 1. redis二种数据备份持久化的机制以及简述?
 	rdb:每隔一段时间改变次数到达一定次数，落盘
 	aof:写操作就去落盘
-2. redis有主从复制机制，慢日志机制
+2. redis有主从复制机制，慢日志机制。redis哨兵模式，出现故障时将从服务器作为主服务器减少人工干预。主从机器内存中存储相同数据，浪费内容。集群模式则共享内存。
+
+集群模式
+采用去中心化思想，数据按照 slot 存储分布在多个节点，节点间数据共享，可动态调整数据分布;
+
+可扩展性：可线性扩展到 1000 多个节点，节点可动态添加或删除;
+
+高可用性：部分节点不可用时，集群仍可用。通过增加 Slave 做 standby 数据副本，能够实现故障自动 failover，节点之间通过 gossip 协议交换状态信息，用投票机制完成 Slave 到 Master 的角色提升;
+
+降低运维成本，提高系统的扩展性和可用性。
+
+2.1 redis代理
+分成client代理，server代理 
+代理基本原理是：通过中间件的形式，Redis客户端把请求发送到代理，代理根据路由规则发送到正确的Redis实例，最后代理把结果汇集返回给客户端。
+
+基于客户端的方案任何时候都要慎重考虑，在此我们不予推荐。
+
+基于twemproxy的方案虽然看起来功能挺全面，但是实际使用中存在的问题同样很多，具体见上述，目前也不推荐再用twemproxy的方案。
+
+redis cluster自redis 3.0推出以来，目前已经在很多生产环境上得到了应用，目前来讲，构建redis集群，推荐采用redis cluster搭配一款支持redis cluster的代理方案。
+
 3. key的过期策略？
 3.1 主动定时删除
 3.2 取key时，检查删除
@@ -1054,9 +1100,23 @@ redis针对内存满了，有哪几种处理机制？ 一般是移除设置过�
 	sort set, zadd foo bar 1
 	list, lset foo bar
 5. 缓存和数据库双写问题（redis保证最终一致性）
-5.1 为了没有脏数据，采用先写数据库后删除缓存，还可以使用 写数据库后使用队列进行补偿（binlog日志等方式）
+“数据一致”一般指的是：缓存中有数据，缓存的数据值 = 数据库中的值。
 
-6. 透和雪崩该如何处理？
+但根据缓存中是有数据为依据，则”一致“可以包含两种情况：
+
+缓存中有数据，缓存的数据值 = 数据库中的值（需均为最新值，本文将“旧值的一致”归类为“不一致状态”）
+缓存中本没有数据，数据库中的值 = 最新值（有请求查询数据库时，会将数据写入缓存，则变为上面的“一致”状态）
+”数据不一致“：缓存的数据值 ≠  数据库中的值；缓存或者数据库中存在旧值，导致其他线程读到旧数据
+根据是否接收写请求，可以把缓存分成读写缓存和只读缓存。
+
+只读缓存：只在缓存进行数据查找，即使用 “更新数据库+删除缓存” 策略；
+	分成二步1.更新数据库 2.删除缓存 如果假设第2步会失败了，则在第一步成功后，删除redis操作写入消息队列，借助消息队列失败重试功能。还可以使用 写数据库后使用消息队列+异步重试 进行补偿（binlog日志等方式）。进来的第一个进程上锁，从数据库取数据。
+读写缓存：需要在缓存中对数据进行增删改查，即使用 “更新数据库+更新缓存”策略。
+	分成二步1.更新数据库 2.更新缓存 如果假设第2步会失败了，则在第一步成功后，删除redis操作写入消息队列，借助消息队列失败重试功能。
+https://cloud.tencent.com/developer/article/1917325
+5.1 为了没有脏数据，采用先写数据库后删除缓存，还可以使用 写数据库后使用消息队列+异步重试 进行补偿（binlog日志等方式）
+
+6. 穿透和雪崩该如何处理？
 - 被动缓存：
 	1. 先更新数据库再删除redis，过期时间设置随机。
 	2. 进来的第一个进程上锁，从数据库取数据。
@@ -1289,6 +1349,129 @@ import 基于src目录，具体跟的是文件夹路径
 从其他p拿取goroutine和全局队列中拿取
 8、goroutine的调度机制，如果P一直抢占了M 怎么办？
 检测占用时间
+
+golang标准包：
+bufio: 普通io封装成带缓冲io，可以按行读取与写入
+bytes: 封装对[]byte的操作
+archive,compress: 归档和压缩
+container
+	heap: 比如数组实现len,swap,push,pop操作后，就可以使用heap.Init,构建最大堆，最小堆，优先级堆
+	list: 封装了列表
+	ring: 封装了环
+context: 上下文。用于协程之间或者方法之间取消，超时取消，传递k-v
+crypto
+	hmac:hamc算法看做是加盐的hash算法（加盐是将一个随机字符串放在需要加密的密文前面或者后面，然后对这个拼接后的密文进行加密得到hash值）。但它们的加密原理肯定不一样，虽然达到的效果是一样的，都是对密文混入一个第三方值，然后得到一个hash值。
+	sha256Hash := sha256.New()
+	sha256Hash.Write([]byte("hello world"))
+	fmt.Printf("%x\n", sha256Hash.Sum(nil))
+	fmt.Printf("%x\n", sha256Hash.Sum([]byte("!")))
+
+	hmacHash := hmac.New(sha256.New, nil)
+	hmacHash.Write([]byte("hello world"))
+	fmt.Printf("%x\n", hmacHash.Sum(nil))
+	fmt.Printf("%x\n", hmacHash.Sum([]byte("!")))
+
+	b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+	21b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9
+	c2ea634c993f050482b4e6243224087f7c23bdd3c07ab1a45e9a21c62fad994e
+	21c2ea634c993f050482b4e6243224087f7c23bdd3c07ab1a45e9a21c62fad994e
+	write()函数往hash块写数据，sum()函数往hash结果前加前缀
+embed：
+	读取文件中内容到变量
+	//go:embed version.txt
+	var version string
+	func main() {
+		fmt.Printf("version %q\n", version)
+	}
+encoding:
+	base64:
+		msg := "Hello, 世界"
+		encoded := base64.StdEncoding.EncodeToString([]byte(msg))
+	json:
+	hex
+	binary:大端，小端序
+errors:
+	wraps():包裹错误
+	is():判断二个错误是否相等
+	as():将一个错误转成另一个错误
+flag:
+	处理命令行参数
+fmt:
+	标准输入包
+html.template:
+	s := `<script>alter("xss")</script>`
+	es := html.EscapeString(s)
+	t.Log(es)
+	t.Log(html.UnescapeString(es))
+	预防xss注入
+io: 将磁盘读入内存，内存写入磁盘
+ioutil:读取文件或者目录的工具方法，ReadDir(),ReadFile()
+http: client, request, response核心结构体。response := client.DO(request) 
+	values.add(key1, value1), values.encode()
+	header, handler,url.Values，URL结构体
+	http.Client{
+		&http.Transport{
+			DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second, // 连接超时时间
+			KeepAlive: 60 * time.Second, // 保持长连接的时间
+		}).DialContext, // 设置连接的参数
+		MaxIdleConns:          500, // 最大空闲连接
+		IdleConnTimeout:       60 * time.Second, // 空闲连接的超时时间
+		ExpectContinueTimeout: 30 * time.Second, // 等待服务第一个响应的超时时间
+		MaxIdleConnsPerHost:   100, // 每个host保持的空闲连接数
+		}
+	}
+	Transport的主要功能:
+	底层是一个连接池,缓存了长连接，用于大量http请求场景下的连接复用
+net:
+	l, err := net.Listen("tcp", ":8088")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for {
+		// 等待下一个连接,如果没有连接,l.Accept会阻塞
+		conn, err := l.Accept()
+		// conn 为三次握手的连接
+	}
+os:
+	File，Dir核心结构体
+path：处理文件系统
+plugin:应用场景,编译出so文件
+	1.通过plugin我们可以很方便的对于不同功能加载相应的模块并调用相关的模块;
+	2.针对不同语言(英文,汉语,德语……)加载不同的语言so文件,进行不同的输出;
+	3.编译出的文件给不同的编程语言用(如：c/java/python/lua等).
+	4.需要加密的核心算法,核心业务逻辑可以可以编译成plugin插件
+	5.黑客预留的后门backdoor可以使用plugin:
+	6.函数集动态加载
+reflect:
+	变量
+	1.reflect.Valueof() reflect.Typeof()
+regexp:
+	1.正则
+	Compile:最左最短，会返回error
+	CompilePOSIX：最左最长
+	MustCompile:最左最短，不会返回error
+runtime:
+	1.runtime.GC()
+	2.runtime.NumCPU():逻辑CPU数量
+	3.runtime.GOMAXPROCS():设置P数量
+	4.runtime.Gosched():让出调度
+sort:
+	基础结构实现swap(),len(),就可以对struct进行排序
+strconv:
+	将字符串转换成其他类型。其他类型转成string，调用string()
+strings:
+	字符串的工具方法集合
+sync:
+	map,mutex,rwmutex,once,pool,waitgroup
+atomic:
+	int32,int64,uint32,uint64,uintptr,unsafe.Pointer原子操作，进行增减，比较交换
+time:
+	Duration,Location,Ticker,Timer核心结构体
+unicode:
+	utf8编码
+unsafe:
+	Pointer, uintptr区别
 ```
 
 - 算法

@@ -947,7 +947,7 @@ http 模块下的指令
 ```
 mysql innodb适合读多写少，可以增加缓存。写多读少，低价值数据使用nosql,高价值数据使用tokudb存储引擎。
 
-MySQL如何实现事务ACID？通过redo log和undo log。事务未提交时将逆向操作记录undo日志记录，发生断电，根据此日志进行回滚。操作结果在redo日志中事务提交后，发生断电，可以根据此日志刷入磁盘。
+MySQL如何实现事务ACID？通过redo log和undo log
 redo log叫做重做日志，是用来实现事务的持久性。当事务提交之后会把所有修改信息都会存到该redo log日志中。发生断电，可以根据此日志恢复。redo log是用来恢复数据的 用于保障，已提交事务的持久化特性。
 undo log是用来回滚数据的用于保障未提交事务的原子性。undo log记录事务修改之前版本的数据信息，因此假如由于系统错误或者rollback操作而回滚的话可以根据undo log的信息来进行回滚到没被修改前的状态。
 
@@ -960,10 +960,10 @@ undo log是用来回滚数据的用于保障未提交事务的原子性。undo l
 
 因为存在事务并发，所以要事务隔离去保证？
 事务隔离级别
-未提交读	一个事务还没提交时，它做的变更就能被别的事务看到。出现脏读
-提交读	一个事务提交之后，它做的变更才会被其他事务看到。解决脏读问题，还有幻读问题。想一下幻读的原因，其实就是行锁只能锁住行，但新插入记录这个动作，要更新的是记录之间的“间隙”
-可重复读	一个事务中，对同一份数据的读取结果总是相同的，无论是否有其他事务对这份数据进行操作，以及这个事务是否提交。 InnoDB默认级别 。
-		通过MVCC多版本的并发控制，在每行记录增加隐藏版本字段，每开启事务时获取版本号，解决幻读问题。
+未提交读	一个事务还没提交时，它做的变更就能被别的事务看到。要达到这个效果，增加了读写锁。脏读针对另一个事务的update操作，解决脏读可以mysql的读写锁lock in share或者for update
+提交读	一个事务提交之后，它做的变更才会被其他事务看到。要达到这个效果，增加了读写和间隙锁。解决脏读问题，还有幻读问题。想一下幻读的原因，其实就是行锁只能锁住行，幻读针对另一个事务的insert操作，但新插入记录这个动作，要更新的是记录之间的“间隙”
+可重复读	一个事务中，对同一份数据的读取结果总是相同的，无论是否有其他事务对这份数据进行操作，以及这个事务是否提交。 要达到这个效果，增加了读写和间隙锁和MVCC。InnoDB默认级别 。
+		针对本事务重复读取数据，通过MVCC多版本的并发控制，在每行记录增加隐藏版本字段，每开启事务时获取版本号，达到可重复读效果。
 		MVCC保证事务的隔离性
 串行化	
 	事务串行化执行，每次读都需要获得表级共享锁，读写相互都会阻塞，隔离级别最高，牺牲系统并发性。
@@ -974,7 +974,7 @@ undo log是用来回滚数据的用于保障未提交事务的原子性。undo l
 2. sql语句，创建唯一的联合索引
 3. 索引引擎区别，btree索引与hash索引的区别
 innodb和myisam都是用b+tree索引，不同的是myisam的b+tree不带数据需要回表，
-b+tree索引带数据不需要回标，聚餐索引。innodb支持行锁，有更高的并发。
+b+tree索引带数据不需要回标，聚餐索引。innodb支持行锁，有更高的并发
 innodb的辅助索引记录的是主键id，查本身的索引b+tree得到主键id，再去主键索引b+tree树获得数据。
 联合索引的存储结构参考https://blog.csdn.net/weixin_30531261/article/details/79329722
 3.1 b+树非叶子节点保留指针、索引值，叶子节点保留数据、整行数据、数据块地址+行号
@@ -1113,7 +1113,7 @@ redis cluster自redis 3.0推出以来，目前已经在很多生产环境上得�
 3.1 主动定时删除
 3.2 取key时，检查删除
 3.3 key淘汰机制
-redis针对内存满了，有哪几种处理机制？ 一般是移除设置过过期时间的key
+redis针对内存满了，有哪几种处理机制？ 一般是1、不移除，2、随机移除带有过期时间的key 3、根据lru移除带有过期时间的key
 	# volatile-lru -> 利用LRU算法移除设置过过期时间的key (LRU:最近使用 Least Recently Used )
 	# allkeys-lru -> 利用LRU算法移除任何key
 	# volatile-random -> 移除设置过过期时间的随机key
@@ -1124,16 +1124,15 @@ redis针对内存满了，有哪几种处理机制？ 一般是移除设置过�
 	string, set foo bar
 	hash, hset foo age 24
 	set, sadd foo bar
-	sort set, zadd foo bar 1
+	sort set, zadd foo bar 1， ZRANGE foo 0 10 WITHSCORES
 	list, lset foo bar
 5. 缓存和数据库双写问题（redis保证最终一致性）
 “数据一致”一般指的是：缓存中有数据，缓存的数据值 = 数据库中的值。
 
-但根据缓存中是有数据为依据，则”一致“可以包含两种情况：
+redis用来只读缓存，并发量不大情况可以采用“更新数据库+删除缓存用被动更新策略。去数据库取数据的时候，可以加个锁可以避免缓存穿透。
+并发量大会出现缓存穿透，所以采用“更新数据库+更新缓存”主动缓存策略策略。
+如果担心删除或者更新redis操作失败，采用消息队列或者binlog作为失败补偿和重试。
 
-缓存中有数据，缓存的数据值 = 数据库中的值（需均为最新值，本文将“旧值的一致”归类为“不一致状态”）
-缓存中本没有数据，数据库中的值 = 最新值（有请求查询数据库时，会将数据写入缓存，则变为上面的“一致”状态）
-”数据不一致“：缓存的数据值 ≠  数据库中的值；缓存或者数据库中存在旧值，导致其他线程读到旧数据
 根据是否接收写请求，可以把缓存分成读写缓存和只读缓存。
 
 只读缓存：只在缓存进行数据查找，即使用 “更新数据库+删除缓存” 策略；
@@ -1148,7 +1147,7 @@ https://cloud.tencent.com/developer/article/1917325
 	1. 先更新数据库再删除redis，过期时间设置随机。
 	2. 进来的第一个进程上锁，从数据库取数据。
 - 主动缓存：
-	1. 脚本主动从数据库取数据，更新缓存，保证缓存不失效。
+	1. 脚本主动从数据库取数据，更新缓存，保证缓存不失效
 
 7.dis集群并发竞争key的问题该如何处理？
 	redis是单进程程序，多个set操作同时进来，由于操作顺序不一致出现数据不一致问题。
@@ -1157,11 +1156,174 @@ https://cloud.tencent.com/developer/article/1917325
 		2. 消息队列 - 并发操作变成并行操作
 ```
 
+- rocketmq
+```
+//初始化
+ps.Producer, err = rocketmq.NewProducer(
+	producer.WithInstanceName(conf.Name+"Producer"),
+	producer.WithGroupName(conf.Name+"ProducerGroup"),
+	producer.WithNameServer([]string{addr}),
+	producer.WithRetry(2),
+)
+if err != nil {
+	return err
+}
+if err = ps.Producer.Start(); err != nil {
+	return err
+}
+//健康检查
+msg := primitive.NewMessage(conf.Topic, []byte("startTime:"+time.Now().Format(time.RFC3339Nano)))
+msg.WithKeys([]string{conf.Topic + ":pid:" + strconv.Itoa(os.Getpid())})
+_, pingErr := ps.Producer.SendSync(context.Background(), msg)
+if pingErr != nil {
+	return err
+}
+
+// send
+msg := primitive.NewMessage(ps.conf.Rocket.Topic, value)
+result, err := ps.Producer.SendSync(context.Background(), msg)
+
+// subsribe
+consumerObject, err := rocketmq.NewPushConsumer(
+	consumer.WithNameServer([]string{addr}),
+	consumer.WithInstance(fmt.Sprintf("%sConsumer%d", conf.Name, i)),
+	consumer.WithGroupName(conf.Name+"ConsumerGroup"),
+	consumer.WithPullInterval(time.Duration(conf.ConsumeInterval)*1000*time.Millisecond), //拉消息间隔，单位需要是millisecond
+	consumer.WithConsumerOrder(true),
+	consumer.WithConsumeFromWhere(consumer.ConsumeFromFirstOffset),
+	consumer.WithConsumerModel(consumer.Clustering), //消费模式，默认为clustering
+	//consumer.WithPullBatchSize(1),              //一个queue一次最多拉取多少条消息，默认值32，设置了超过32时似乎也不会生效
+	consumer.WithConsumeMessageBatchMaxSize(1), //一次消费多少条消息，默认值1，超过32就无意义了，这一批消息将拥有同一个消费状态，即如果消息的消费状态返回的是CONSUME_SUCCESS，则它们都消费成功，而如果返回的是RECONSUME_LATER，则它们都将再次投递。
+)
+if err != nil {
+	return err
+}
+err = consumerObject.Subscribe(conf.Topic, consumer.MessageSelector{}, cs.SubCommunicateSendMsg)
+if err := consumerObject.Start(); err != nil {
+	return err
+}
+
+为什么要使用MQ？
+1、解耦 
+2、异步：不需要同步执行的远程调用可以有效提高响应时间
+3、削峰：请求达到峰值后，后端service还可以保持固定消费速率消费，不会被压垮
+
+由哪些角色组成，每个角色作用和特点是什么？
+角色	作用
+Nameserver	无状态，动态列表；这也是和zookeeper的重要区别之一。zookeeper是有状态的。
+Producer	消息生产者，负责发消息到Broker。
+Broker	就是MQ本身，负责收发消息、持久化消息等。
+Consumer	消息消费者，负责从Broker上拉取消息进行消费，消费完进行ack。
+topic对应多个queue，queue分布式存储在多个broker
+架构介绍示意图：https://blog.csdn.net/wui66655/article/details/123091578
+
+RocketMQ Broker中的消息被消费后会立即删除吗？
+不会，每条消息都会持久化到CommitLog中，每个Consumer连接到Broker后会维持消费进度信息。
+消息被消费后，更新当前Consumer的消费进度（CommitLog的offset）
+
+追问：那么消息会堆积吗？什么时候清理过期消息？
+默认，凌晨4点去删除过期48小时的commitlog的消息
+
+RocketMQ消费模式有几种？
+集群消费
+1.一条消息只会被同Group中的一个Consumer消费
+2.多个Group同时消费一个Topic时，每个Group都会有一个Consumer消费到数据
+
+广播消费
+消息将对一 个Consumer Group 下的各个 Consumer 实例都消费一遍。
+
+消费消息是push还是pull？
+RocketMQ没有真正意义的push，都是pull，虽然有push类，但实际底层实现采用的是长轮询机制，即拉取方式
+broker端属性 longPollingEnable 标记是否开启长轮询。默认开启
+
+追问：为什么要主动拉取消息而不使用事件监听方式？
+如果broker主动推送消息的话有可能push速度快，消费速度慢的情况。
+
+
+RocketMQ如何做负载均衡？
+topic对应多个queue，queue可以分布在不同broker
+Producer负载均衡
+Producer端，每个实例在发消息的时候，默认会轮询所有的message queue发送，以达到让消息平均落在不同的queue上。而由于queue可以散落在不同的broker，所以消息就发送到不同的broker下.
+Consumer负载均衡
+在集群消费模式下，每条消息只需要投递到订阅这个topic的Consumer Group下的一个实例即可,queue都是只允许分配只一个实例。
+
+广播模式下要求一条消息需要投递到一个消费组下面所有的消费者实例，所以也就没有消息被分摊消费的说法。
+
+
+
+消息重复消费
+影响消息正常发送和消费的重要原因是网络的不确定性。
+
+引起重复消费的原因：
+ACK
+正常情况下在consumer真正消费完消息后应该发送ack，通知broker该消息已正常消费，从queue中剔除
+当ack因为网络原因无法发送到broker，broker会认为词条消息没有被消费，此后会开启消息重投机制把消息再次投递到consumer
+消费模式
+在CLUSTERING模式下，消息在broker中会保证相同group的consumer消费一次，但是针对不同group的consumer会推送多次
+
+解决方案：
+数据库表（推荐）
+解决办法：利用数据库的唯一索引存储消息主键
+处理消息前，使用消息主键在表中带有约束的字段中insert
+Map
+单机时可以使用map ConcurrentHashMap -> putIfAbsent guava cache
+Redis
+分布式锁搞起来
+
+如何让RocketMQ保证消息的顺序消费
+首先多个queue只能保证单个queue里的顺序，queue是典型的FIFO，天然顺序。多个queue同时消费是无法绝对保证消息的有序性的。所以总结如下：
+同一topic，同一个QUEUE，发消息的时候一个线程去发送消息，消费的时候 一个线程去消费一个queue里的消息。
+
+RocketMQ如何保证消息不丢失
+首先在如下三个部分都可能会出现丢失消息的情况：
+Producer端
+Broker端
+Consumer端
+
+Producer端如何保证消息不丢失
+采取send()同步发消息，发送结果是同步感知的。
+发送失败后可以重试，设置重试次数。默认3次。
+
+Broker端如何保证消息不丢失
+修改刷盘策略为同步刷盘。默认情况下是异步刷盘的。
+flushDiskType = SYNC_FLUSH
+集群部署，主从模式，高可用。
+
+Consumer端如何保证消息不丢失
+完全消费正常后在进行手动ack确认。
+
+
+rocketMQ的消息堆积如何处理?
+下游消费系统如果宕机了，导致几百万条消息在消息中间件里积压，此时怎么处理?
+你们线上是否遇到过消息积压的生产故障?如果没遇到过，你考虑一下如何应对?
+定位问题，修改bug，增加消费者
+
+追问：堆积时间过长消息超时了？
+未被消费的消息不会存在超时删除这情况
+
+追问：堆积的消息会不会进死信队列？
+不会，消息在消费失败后会进入重试队列（%RETRY%+ConsumerGroup），16次（默认16次）才会进入死信队列（%DLQ%+ConsumerGroup）。
+
+Broker把自己的信息注册到哪个NameServer上？
+因为Broker会向所有的NameServer上注册自己的信息，而不是某一个，是每一个，全部！
+
+
+RocketMQ在分布式事务支持这块机制的底层原理?
+最终一致性方案
+查看这张图片，解释分布式事务过程：https://pic1.zhimg.com/v2-4defd36bc842d453308b22667e38a421_1440w.jpg?source=172ae18b
+```
+
+- v2ray
+```
+https://wkzqn.gitee.io/2020/11/15/Ubuntu%E4%B8%ADv2ray%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE/
+
+```
+
 - git
 ```
-0. 工作区，暂存区，本地分支
+1. 工作区，暂存区，本地分支
 
-1. 如何取消一个文件的修改？
+2. 如何取消一个文件的修改？
 	git reset HEAD <file> // 抵消 add
 	git checkout -- filename
 2. 一个文件提交到版本库了，如何撤回？
@@ -1173,6 +1335,9 @@ https://cloud.tencent.com/developer/article/1917325
 	merge过分支后，历史事件重新排序变成直线
 	合并分支，将分支的所有commit提交汇集成一个commit
 	git rebase -i --autosquash master
+5、项目分支管理策略
+	采用阿里AoneFlow。有环境分支，有发布窗口分支，有特性分支
+
 ```
 
 - mongo
@@ -1264,6 +1429,68 @@ tcp首部长度 20 ，所以一个数据长度 1500 - 20（IP首部长度） - 2
 7. 目标ip
 ```
 
+- ipv4,ipv6协议层面
+```
+ipv4是4字节存放ip地址，ipv6是16字节
+https://www.jianshu.com/p/fab7404ba73b
+
+ipv4:版本号,生存时间TTL（8位）,协议（8位）,.源地址（32位）,目的地址（32位）
+ipv6:版本号,生存时间TTL（8位）,.源地址（32位）,目的地址（32位）
+```
+
+- https握手流程
+```
+https://zhuanlan.zhihu.com/p/240389098
+1.客户端提交https请求
+
+2.服务器响应客户,并把服务器公钥发给客户端
+
+3.客户端验证公钥的有效性
+
+4.有效后，客户端会生成一个会话密钥(一个随机数)
+
+5.用服务器公钥加密这个会话密钥后，发送给服务器
+
+6.服务器收到公钥加密的密钥后，用私钥解密，获取会话密钥
+
+7.客户端与服务器利用会话密钥对传输数据进行对称加密通信
+
+```
+-客户端如何检验公钥是不是合法呢？
+```
+客户端其实需要预置CA签发的根证书，这个根证书中保存了CA的公钥.
+客户端接收到服务器证书后，使用预置的CA签发的根证书进行验签
+```
+- nginx配置https
+```
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile        on;
+    keepalive_timeout  65;
+	server {
+		#监听443端口
+		listen 443;
+		#你的域名
+		server_name huiblog.top; 
+		ssl on;
+		#ssl证书的pem文件路径
+		ssl_certificate  /root/card/huiblog.top.pem;
+		#ssl证书的key文件路径
+		ssl_certificate_key /root/card/huiblog.top.key;
+		location / {
+		proxy_pass  http://公网地址:项目端口号;
+		}
+	}
+	server {
+		listen 80;
+		server_name huiblog.top;
+		#将请求转成https
+		rewrite ^(.*)$ https://$host$1 permanent;
+	}
+}
+```
+
 - shell
 ```
 pwd=/workspace
@@ -1331,7 +1558,196 @@ unionfs: 脚
 Dockerfile中的命令COPY和ADD命令有什么区别?
 一般而言，虽然ADD并且COPY在功能上类似，但是首选COPY。那是因为它比ADD更易懂。COPY仅支持将本地文件复制到容器中，而ADD具有一些额外的功能(如仅限本地的tar提取和远程URL支持)，这些功能并不是很明显。因此，ADD的最佳用途是将本地tar文件自动提取到镜像中，如ADD rootfs.tar.xz /。COPY与ADD的区别COPY的SRC只能是本地文件，其他用法一致
 
+容器与主机之间的数据拷贝命令？
+Docker cp命令用于穷奇与主机之间的数据拷贝
+主机到容器：docker cp /www 96f7f14e99ab:/www/
+容器到主机：docker cp 96f7f14e99ab:/www /tmp
+
+如何批量清理临时镜像文件？
+可以使用sudo docker rmi $(sudo docker images -q -f danging=true)命令
+
+可以在一个容器中同时运行多个应用进程吗？
+一般不推荐在用以容器内运行多个应用进程，如果有类似需求，可以用过额外的进程管理机制，比如supervisord来管理所运行的进程。
+
+如何控制容器占用系统资源（CPU，内存）的份额？
+在使用docker create命令创建容器或使用docker run 创建并运行容器的时候，可以使用-c|-spu-shares[=0]参数来调整同期使用SPU的权重，使用-m|-memory参数来调整容器使用内存的大小。
+
+docker引擎配置文件：/etc/docker 
+docker默认存储位置：/var/lib/docker 
+于docker相关的本地资源存在/var/lib/docker/目录下，其中container目录存放容器信息，graph目录存放镜像信息，aufs目录下存放具体的镜像底层文件。
+
+docker inspect
+查看各种容器信息
+
+六种减小Docker镜像大小的方法
+1. 使用Alpine Linux作为基础镜像。
+2. 只安装最少的依赖  --no-install-recommends，指定这个参数后，有一些非必须的依赖将不会被一起安装
+3. 命令写在一行，减少层数
+4、多阶段编译：编译和运行基础镜像分离
+COPY --from=builder /usr/src/target/shirodemo-1.0-SNAPSHOT.jar /shirodemo-1.0-SNAPSHOT.jar
 ```
+
+kubernetes
+```
+架构设计
+https://www.kubernetes.org.cn/kubernetes%e8%ae%be%e8%ae%a1%e6%9e%b6%e6%9e%84
+Kubernetes主要由以下几个核心组件组成：
+
+etcd保存了整个集群的状态；
+apiserver提供了资源操作的唯一入口，并提供认证、授权、访问控制、API注册和发现等机制；
+controller manager负责维护集群的状态，比如故障检测、自动扩展、滚动更新等；Node controller, pod controller, namespace controller,replication controller
+scheduler负责资源的调度，按照预定的调度策略将Pod调度到相应的机器上；
+kubelet负责维护容器的生命周期，同时也负责Volume（CVI）和网络（CNI）的管理；
+Container runtime负责镜像管理以及Pod和容器的真正运行（CRI）；
+kube-proxy负责为Service提供cluster内部的服务发现和负载均衡；
+除了核心组件，还有一些推荐的Add-ons：
+
+kube-dns负责为整个集群提供DNS服务
+Ingress Controller为服务提供外网入口
+Heapster提供资源监控
+Dashboard提供GUI
+Federation提供跨可用区的集群
+Fluentd-elasticsearch提供集群日志采集、存储与查询
+
+概述：
+node:
+1、CRI:docker 负责容器运行
+2、kubelet：接收master指令在本节点执行，比如管理容器网络
+3、kube-proxy: 内部service的负载均衡
+
+master:
+1、etcd：保存集群状态
+2、apiserver：cli，gui指令
+3、controller: 集群状态，控制pod。
+4、scheduler：pod调度
+
+
+Kubernetes的核心技术概念和API对象
+API对象是K8s集群中的管理操作单元。K8s集群系统每支持一项新功能，引入一项新技术，一定会新引入对应的API对象，支持对该功能的管理操作。例如副本集Replica Set对应的API对象是RS。
+
+即所有的操作都是声明式（Declarative）的而不是命令式（Imperative）的。声明式操作在分布式系统中的好处是稳定，不怕丢操作或运行多次，例如设置副本数为3的操作运行多次也还是一个结果，而给副本数加1的操作就不是声明式的，运行多次结果就错了。
+
+Pod
+最重要的也是最基础的是微服务Pod。Pod是在K8s集群中运行部署应用或服务的最小单元，它是可以支持多容器的。
+Pod的设计理念是支持多个容器在一个Pod中共享网络地址和文件系统，可以通过进程间通信和文件共享这种简单高效的方式组合完成服务。
+
+Pod是K8s集群中所有业务类型的基础，可以看作运行在K8s集群中的小机器人，不同类型的业务就需要不同类型的小机器人去执行。目前K8s中的业务主要可以分为长期伺服型（long-running）、批处理型（batch）、节点后台支撑型（node-daemon）和有状态应用型（stateful application）；分别对应的小机器人控制器为Deployment、Job、DaemonSet和PetSet，本文后面会一一介绍。
+
+pod代表着一个集群中节点上运行的进程.
+
+部署(Deployment)
+部署表示用户对K8s集群的一次更新操作。部署是一个比RS应用模式更广的API对象，可以是创建一个新的服务，更新一个新的服务，也可以是滚动升级一个服务。滚动升级一个服务，实际是创建一个新的RS，然后逐渐将新RS中副本数增加到理想状态，将旧RS中的副本数减小到0的复合操作；这样一个复合操作用一个RS是不太好描述的，所以用一个更通用的Deployment来描述。以K8s的发展方向，未来对所有长期伺服型的的业务的管理，都会通过Deployment来管理。
+
+服务（Service）：用做负载均衡，外部通过nodeIP访问pod，也可以是内部pod访问外部mysql都会用到service
+RC、RS和Deployment只是保证了支撑服务的微服务Pod的数量，但是没有解决如何访问这些服务的问题。一个Pod只是一个运行服务的实例，随时可能在一个节点上停止，在另一个节点以一个新的IP启动一个新的Pod，因此不能以确定的IP和端口号提供服务。要稳定地提供服务需要服务发现和负载均衡能力。服务发现完成的工作，是针对客户端访问的服务，找到对应的的后端服务实例。在K8s集群中，客户端需要访问的服务就是Service对象。每个Service会对应一个集群内部有效的虚拟IP，集群内部通过虚拟IP访问一个服务。在K8s集群中微服务的负载均衡是由Kube-proxy实现的。Kube-proxy是K8s集群内部的负载均衡器。它是一个分布式代理服务器，在K8s的每个节点上都有一个；这一设计体现了它的伸缩性优势，需要访问服务的节点越多，提供负载均衡能力的Kube-proxy就越多，高可用节点也随之增多。与之相比，我们平时在服务器端做个反向代理做负载均衡，还要进一步解决反向代理的负载均衡和高可用问题。
+任务（Job）：批处理
+Job是K8s用来控制批处理型任务的API对象。批处理业务与长期伺服业务的主要区别是批处理业务的运行有头有尾，而长期伺服业务在用户不停止的情况下永远运行。Job管理的Pod根据用户的设置把任务成功完成就自动退出了。成功完成的标志根据不同的spec.completions策略而不同：单Pod型任务有一个Pod成功就标志完成；定数成功型任务保证有N个任务全部成功；工作队列型任务根据应用确认的全局成功而标志成
+
+定时任务（CronJob）
+
+后台支撑服务集（DaemonSet）：每个node都有该任务
+长期伺服型和批处理型服务的核心在业务应用，可能有些节点运行多个同类业务的Pod，有些节点上又没有这类Pod运行；而后台支撑型服务的核心关注点在K8s集群中的节点（物理机或虚拟机），要保证每个节点上都有一个此类Pod运行。节点可能是所有集群节点也可能是通过nodeSelector选定的一些特定节点。典型的后台支撑型服务包括，存储，日志和监控等在每个节点上支持K8s集群运行的服务。
+
+
+持久存储卷（Persistent Volume，PV）和持久存储卷声明（Persistent Volume Claim，PVC）
+pv: 存储的提供者。pvc: 使用
+PV和PVC使得K8s集群具备了存储的逻辑抽象能力，使得在配置Pod的逻辑里可以忽略对实际后台存储技术的配置，而把这项配置的工作交给PV的配置者，即集群的管理者。存储的PV和PVC的这种关系，跟计算的Node和Pod的关系是非常类似的；PV和Node是资源的提供者，根据集群的基础设施变化而变化，由K8s集群管理员配置；而PVC和Pod是资源的使用者，根据业务服务的需求变化而变化，有K8s集群的使用者即服务的管理员来配置。
+
+节点（Node）
+K8s集群中的计算能力由Node提供，最初Node称为服务节点Minion，后来改名为Node。K8s集群中的Node也就等同于Mesos集群中的Slave节点，是所有Pod运行所在的工作主机，可以是物理机也可以是虚拟机。不论是物理机还是虚拟机，工作主机的统一特征是上面要运行kubelet管理节点上运行的容器。
+
+密钥对象（Secret）
+Secret是用来保存和传递密码、密钥、认证凭证这些敏感信息的对象。使用Secret的好处是可以避免把敏感信息明文写在配置文件里。在K8s集群中配置和使用服务不可避免的要用到各种敏感信息实现登录、认证等功能，例如访问AWS存储的用户名密码。为了避免将类似的敏感信息明文写在所有需要使用的配置文件中，可以将这些信息存入一个Secret对象，而在配置文件中通过Secret对象引用这些敏感信息。这种方式的好处包括：意图明确，避免重复，减少暴漏机会。
+
+InitContainer：
+处理pod的初始化工作的容器
+
+ingress controller: 将客户端请求直接转发到service对应的后端pod。7层。在每个node启动ingress的daemonSet。替换nodeIP+servicePort。
+```
+
+基于docker运行k8s
+```
+https://www.kubernetes.org.cn/doc-5
+
+
+yamls
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hto-common-env-cm
+  namespace: chuan-prod
+data:
+  port: "7685"
+  configPath: ./conf/config.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hto-config-file
+  namespace: chuan-prod
+data:
+  config.yaml: |
+	debug: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hto-common
+  namespace: chuan-prod
+spec:
+  selector:
+    matchLabels:
+      app: hto-common
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hto-common
+    spec:
+      containers:
+        - name: hto-common
+          image: <hto-common_image>  # 部署时替换
+          imagePullPolicy: IfNotPresent
+          command: [ "./hto" ]
+          workingDir: /app
+          ports:
+            - containerPort: 7685
+          envFrom:
+            - configMapRef:
+                name: hto-common-env-cm
+          volumeMounts:
+            - name: hto-config-file
+              mountPath: /app/conf
+
+          readinessProbe:     # 就绪探针
+            initialDelaySeconds: 20       # 容器启动后要等待多少秒后存活和就绪探测器才被初始化，默认是 0 秒，最小值是 0。
+            periodSeconds: 5              # 执行探测的时间间隔（单位是秒）。默认是 10 秒。最小值是 1。
+            timeoutSeconds: 10            # 探测的超时后等待多少秒。默认值是 1 秒。最小值是 1。
+            successThreshold: 1           # 探测器在失败后，被视为成功的最小连续成功数。默认值是 1。 存活和启动探测的这个值必须是 1。最小值是 1。
+            failureThreshold: 5           # 当探测失败时，Kubernetes 的重试次数。 存活探测情况下的放弃就意味着重新启动容器。 就绪探测情况下的放弃 Pod 会被打上未就绪的标签。默认值是 3。最小值是 1
+            tcpSocket:
+              port: 7685
+            
+          livenessProbe:    # 存活探针
+            initialDelaySeconds: 40
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 3
+            tcpSocket:
+              port: 7685
+
+      volumes:
+        - name: hto-config-file
+          configMap:
+            name: hto-config-file
+            items:
+              - key: config.yaml
+                path: config.yaml
+      imagePullSecrets:
+        - name: tssl-prod    # 私有镜像仓库，需提前创建secret
+```
+
 
 - php
 ```
@@ -1583,7 +1999,39 @@ go-zero
 saga事务：正向操作与逆向操作（回滚操作）
 tcc事务：相比较saga事务，多了一步try（锁定资源），commit（正向操作），cancel（回滚操作）
 		try，commit，cancel是由dtm管理器调用。
-		如果try发生失败，dtm发起回滚全局事务，commit，cancel失败则dtm管理器进行重试，达到最终一致，重试3次人工介入
+		由api向dtm注册全局事务，并向微服务1，2发起try请求
+		如果try发生失败，dtm发起回滚全局事务。dtm会调用服务1的cancel方法
+		commit，cancel失败则dtm管理器进行重试，达到最终一致，重试3次人工介入
+		https://dtm.pub/practice/tcc.html#%E5%A4%B1%E8%B4%A5%E5%9B%9E%E6%BB%9A
+	
+tcc模式下：
+	空回滚：微服务没有收到try请求，收到了cancel请求。微服务要保证正常。
+	空悬挂：由于网络原因，微服务先收到cancel请求再收到try请求。微服务要保证正常。try相当于把资源锁定，悬挂起来
+	幂等：微服务try，commit,cancel请求，允许重复请求不出错。
+
+为了实现空回滚、防止业务悬挂，以及幂等性要求。我们必须在数据库记录冻结金额的同时，记录当前事务id和执行状态，为此我们设计了一张表：
+
+
+CREATE TABLE `account_freeze_tbl` (
+  `xid` varchar(128) NOT NULL COMMENT '事务id',
+  `user_id` varchar(255) DEFAULT NULL COMMENT '用户id',
+  `freeze_money` int(11) unsigned DEFAULT '0' COMMENT '冻结金额',
+  `state` int(1) DEFAULT NULL COMMENT '事务状态，0:try，1:confirm，2:cancel',
+  PRIMARY KEY (`xid`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+Try业务
+记录冻结金额和事务状态0到account_freeze表
+扣减account表可用金额
+Confirm业务
+根据xid删除account_freeze表的冻结记录(因为如果一个事务confirm那么记录就没有意义了)
+Cancel业务
+修改account_freeze表，冻结金额为0，state为2
+修改account表，恢复可用金额
+如何判断是否空回滚
+cancel业务中，根据xid查询account_freeze，如果为null则说明try还没做，需要空回滚
+如何避免业务悬挂
+try业务中，根据xid查询account_freeze ，如果已经存在则证明Cancel已经执行，拒绝执行try业务
 
 7、接口幂等性：一个接口，多次发出同一个请求，必须保证操作只执行一次
 7.1、token机制
@@ -1699,3 +2147,79 @@ func GetInstance(v int) Singleton {
 ```
 1. 处于什么目的离职
 ```
+
+- 剑指offer
+```
+面试形式
+1、电话面试
+	一定要大胆向面试官多提问，直到弄清面试官意图为止
+2、远程桌面面试
+	思考清楚再开始编码
+	能够进行单元测试
+3、现场面试
+	5轮面试可以准备饮料
+	
+	行为面试：
+		参照过往经验。性格特点，不问技术难题，暖场。
+		1分钟介绍主要学习、工作经历
+		项目简历如何写？
+			采用STAR模型。
+			S：项目背景
+			T：自己完成的任务。参与，负责
+			A：为完成任务自己做了哪些工作，是怎么做的
+			R：自己的贡献
+		面试官追问问题：
+			1、项目中碰到最大问题是什么，怎么解决
+			2、从这个项目中学到了什么？
+		简历上有项目背景，突出介绍自己完成的工作以及取得的成绩
+		应聘者掌握的技能
+			1、了解：没做过实际项目，熟悉：做过实际项目，精通
+		准备“为什么跳槽”
+			了解应聘者性格。
+			避免以下4个原因
+				1、老板苛刻
+				2、同事难想处
+				3、加班
+				4、工资低。面试不是谈工资的时候
+	技术面试：现场写代码，技术问题。简历中技术点很透彻
+		1、扎实的基础知识
+			编程语言
+			数据结构
+				链表，树，栈，队列，哈希表。链表，二叉树是重点
+			算法
+		2、高质量的代码
+			注重边界条件和特殊输入，具有鲁棒的程序
+		3、分析问题思路清晰
+			举例子让自己理解
+			使用画图
+		4、优化时间和空间效率
+		5、学习沟通能力
+			面试过程中主动询问，弄清楚题目表现自己沟通能力
+			面试官不会喜欢高傲或者轻视合作
+			知识迁移。前面的问题为后面问题准备
+	应聘者提问：准备几个问题
+		不要问薪水，问结果
+		问跟岗位相关问题
+
+```
+
+- 面试题目
+```
+注意减少时间复杂度，一般O（n2）无法获得offer
+1、singleton 单例
+2、数组中重复的数字。哈希表
+3、链表。链表20行代码就能实现，适合面试
+4、从尾到头打印链表。使用栈
+
+```
+
+- 回答语句
+```
+当清楚：它应该是xxxx
+当不确定：这点不太确定，但凭我的理解我想说说看
+当完全不清楚：这点不太清楚，说不上来
+
+```
+
+
+
